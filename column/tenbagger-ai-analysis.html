@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja" style="color-scheme: light;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    
+    <title>AIで学術論文を読んでテンバガー銘柄をスクリーニングする方法</title>
+    <meta name="description" content="AIを使って学術論文「The Alchemy of Multibagger Stocks」を分析し、10倍株（テンバガー）の共通パターンを抽出。NotebookLMで論文を読み、スクリーニング条件に落とし込む方法を解説します。">
+    <meta name="keywords" content="テンバガー,10倍株,AI分析,NotebookLM,学術論文,株式投資,スクリーニング">
+    
+    <meta property="og:title" content="AIで学術論文を読んでテンバガー銘柄をスクリーニングする方法">
+    <meta property="og:description" content="AIで学術論文を分析し、10倍株の共通パターンを抽出する方法を解説。">
+    <meta property="og:type" content="article">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "AIで学術論文を読んでテンバガー銘柄をスクリーニングする方法",
+      "author": { "@type": "Person", "name": "エンドレスフライト" },
+      "datePublished": "2026-01-19"
+    }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Nunito:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #FFB6D9;
+            --color-secondary: #B4E4FF;
+            --color-accent: #FFC85C;
+            --color-success: #A1E3CB;
+            --color-text: #2D3436;
+            --color-text-light: #636E72;
+            --color-bg: #FFFBF5;
+            --font-heading: 'Poppins', 'Noto Sans JP', sans-serif;
+            --font-body: 'Nunito', 'Noto Sans JP', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.8;
+            color: var(--color-text);
+            background-color: var(--color-bg) !important;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #FFE5F0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .definition {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
+            border-left: 4px solid var(--color-primary);
+            padding: 25px;
+            margin: 40px 0;
+            border-radius: 12px;
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 50px 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--color-primary);
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 35px 0 20px 0;
+        }
+
+        .paper-box {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border-left: 5px solid var(--color-accent);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .finding-box {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border-left: 5px solid var(--color-success);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .warning-box {
+            background: #FFF3E0;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #FF9800;
+            border-radius: 8px;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+            border: 3px solid var(--color-primary);
+            border-radius: 16px;
+            padding: 35px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #FF1493 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        footer {
+            margin-top: 80px;
+            padding: 40px 0 30px 0;
+            text-align: center;
+            border-top: 2px solid #FFE5F0;
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← コラム一覧に戻る</a>
+            <h1>AIで学術論文を読んでテンバガー銘柄をスクリーニングする方法</h1>
+            <p class="meta">2026年1月19日 公開</p>
+        </header>
+
+        <main>
+            <div class="definition">
+                <p><strong>AIを使えば、難解な学術論文を読み解き、10倍株（テンバガー）の共通パターンを抽出できます。</strong>NotebookLMに論文を読み込ませ、スクリーニング条件を生成することで、「運」ではなく「構造」で10倍株を探すアプローチが可能になります。</p>
+            </div>
+
+            <section>
+                <h2>きっかけは1本の学術論文</h2>
+                <p>今回読んだのは、バーミンガム・シティ大学の研究リポジトリに公開されている論文：</p>
+
+                <div class="paper-box">
+                    <h3>The Alchemy of Multibagger Stocks</h3>
+                    <p><strong>（マルチバガー株の錬金術）</strong></p>
+                    <p style="margin-top: 15px;">📄 <a href="https://www.open-access.bcu.ac.uk/16180/" target="_blank" style="color: var(--color-primary);">論文リンク</a></p>
+                    
+                    <h4 style="margin-top: 20px;">研究概要</h4>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li>対象期間：2009年〜2024年</li>
+                        <li>対象市場：米国主要市場</li>
+                        <li>対象銘柄：<strong>10倍以上に成長した464銘柄</strong></li>
+                    </ul>
+
+                    <p>「たまたま当たった数社」ではなく、<strong>統計として意味のある母集団</strong>を対象にした実証研究です。</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>論文の結論：テンバガーは魔法ではなかった</h2>
+                <p>論文の結論を一言でまとめると：</p>
+
+                <div class="finding-box">
+                    <p style="font-size: 1.2rem; font-weight: 700; text-align: center;">
+                        <strong>10倍株は、いくつもの条件が同時に揃った結果</strong>
+                    </p>
+                </div>
+
+                <p>運や直感ではなく、<strong>構造的な要因</strong>があったということです。</p>
+            </section>
+
+            <section>
+                <h2>論文が示した3つの要因</h2>
+
+                <div class="finding-box">
+                    <h3>要因1: 伝統的に効いていた3つの要素（Fama-French）</h3>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li><strong>小型株（Small-cap）</strong></li>
+                        <li><strong>割安性（High-value）</strong></li>
+                        <li><strong>高収益性（High-profitability）</strong></li>
+                    </ul>
+                    <p>地味ですが、この3つは今でも強力に機能していました。</p>
+                </div>
+
+                <div class="finding-box">
+                    <h3>要因2: 本当の原動力</h3>
+                    <p>特に重要とされていたのが：</p>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li><strong>高いフリーキャッシュフロー利回り</strong></li>
+                        <li><strong>EBITDA成長と結びついた投資パターン</strong></li>
+                    </ul>
+                    <p>売上やEPS以上に、<strong>「キャッシュを生み出す力」と「成長投資のバランス」</strong>が、長期的な株価爆発のエンジンになっていました。</p>
+                </div>
+
+                <div class="finding-box">
+                    <h3>要因3: テクニカルとマクロの難しさ</h3>
+                    <p>一方で、マルチバガー株には難しい特徴もあります：</p>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li>モメンタムは<strong>複雑</strong></li>
+                        <li>トレンド反転が<strong>速い</strong></li>
+                        <li>エントリーは<strong>簡単ではない</strong></li>
+                    </ul>
+                    <p>つまり、<strong>「条件は分かっても、タイミングは難しい」</strong>ということです。</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>ここでAIの出番：NotebookLMに聞く</h2>
+                <p>この論文を読んで、こう思いました：</p>
+
+                <blockquote style="background: #F5F5F5; padding: 20px; border-left: 4px solid var(--color-secondary); margin: 20px 0;">
+                    <p>「この論文の知見を、実際のスクリーニング条件に落とし込めないだろうか？」</p>
+                </blockquote>
+
+                <p>そこで、<strong>NotebookLM</strong>に論文を読み込ませて、以下のように依頼しました：</p>
+
+                <div class="paper-box">
+                    <p><strong>依頼内容：</strong></p>
+                    <p>「この論文をもとに、楽天証券の『スーパースクリーナー』で使えるスクリーニング条件を提示してください。」</p>
+                </div>
+
+                <h3>NotebookLMの回答（概要）</h3>
+                <p>NotebookLMは、論文の内容を以下のようなスクリーニング条件に変換してくれました：</p>
+
+                <ul style="padding-left: 20px; margin: 15px 0;">
+                    <li>時価総額：〇〇億円以下（Small-cap）</li>
+                    <li>PBR：〇倍以下（Value）</li>
+                    <li>ROE：〇%以上（Profitability）</li>
+                    <li>フリーキャッシュフロー利回り：〇%以上</li>
+                    <li>EBITDA成長率：〇%以上</li>
+                </ul>
+
+                <p style="margin-top: 20px;"><em>※ 具体的な数値はnote記事の有料部分で公開しています。</em></p>
+            </section>
+
+            <section>
+                <h2>AIで論文を読むメリット</h2>
+                <h3>1. 専門用語を理解できなくても大丈夫</h3>
+                <p>学術論文は専門用語だらけで、初心者には理解が困難です。しかし、NotebookLMに「分かりやすく要約して」と依頼すれば、重要なポイントを抽出してくれます。</p>
+
+                <h3>2. 実務に落とし込める形に変換</h3>
+                <p>論文の知見を「そのまま読む」だけでなく、「スクリーニング条件」という実務で使える形に変換できます。</p>
+
+                <h3>3. 時間の節約</h3>
+                <p>数十ページの論文を読むのに数時間かかるところ、NotebookLMなら数分で要点を抽出できます。</p>
+            </section>
+
+            <section>
+                <h2>AIで論文を読む手順</h2>
+                <h3>ステップ1: 論文を見つける</h3>
+                <p>Google Scholarや大学のリポジトリで、興味のある分野の論文を探します。今回は「multibagger stocks」で検索して見つけました。</p>
+
+                <h3>ステップ2: NotebookLMに読み込ませる</h3>
+                <p>論文のPDFをNotebookLMにアップロードします。</p>
+
+                <h3>ステップ3: 質問する</h3>
+                <p>「この論文の結論を3つにまとめて」「実務で使える形に変換して」など、具体的に質問します。</p>
+
+                <h3>ステップ4: スクリーニング条件を実行</h3>
+                <p>NotebookLMが提示した条件を、実際の証券会社のスクリーナーに入力して銘柄を抽出します。</p>
+            </section>
+
+            <div class="warning-box">
+                <h3>⚠️ 投資判断の注意</h3>
+                <p>この記事は、AIを使った論文分析の方法を紹介するものであり、特定の銘柄を推奨するものではありません。投資は自己責任で行ってください。</p>
+                <p>また、過去のデータに基づく分析が将来の結果を保証するものではありません。</p>
+            </div>
+
+            <div class="cta-box">
+                <h3>📖 具体的なスクリーニング条件と結果</h3>
+                <p>NotebookLMが抽出した具体的な数値、実際のスクリーニング結果、気づいたポイントはnote記事で公開中。</p>
+                <a href="https://note.com/endless_flight/n/ndd357ab6f8aa" class="cta-button" target="_blank">詳しい分析記録を読む →</a>
+            </div>
+
+            <section>
+                <h2>まとめ：科学的に探す、テンバガー銘柄</h2>
+                <p>AIを使えば、難解な学術論文を読み解き、10倍株の共通パターンを抽出できます。NotebookLMに論文を読み込ませることで、「運」ではなく「構造」で10倍株を探すアプローチが可能になります。</p>
+
+                <p>重要なのは、AIが完璧な答えを出すわけではなく、<strong>「思考の補助ツール」</strong>として活用することです。最終的な投資判断は、自分の頭で考える必要があります。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 エンドレスフライト | <a href="index.html">コラム一覧</a> | <a href="https://note.com/endless_flight" target="_blank">note</a></p>
+        </footer>
+    </div>
+</body>
+</html>

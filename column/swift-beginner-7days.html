@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja" style="color-scheme: light;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    
+    <!-- SEO Meta Tags -->
+    <title>Swift初心者は7日間で何が作れる？｜現実的な目標設定と学習計画</title>
+    <meta name="description" content="Swift初心者が7日間でiOSアプリ開発に挑戦するための現実的な目標設定と学習ロードマップ。プログラミング経験ほぼゼロから始められる具体的な学習計画を解説します。">
+    <meta name="keywords" content="Swift初心者,7日間,アプリ開発,SwiftUI,iOS,プログラミング学習,初心者,学習ロードマップ">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Swift初心者は7日間で何が作れる？｜現実的な目標設定と学習計画">
+    <meta property="og:description" content="Swift初心者が7日間でiOSアプリ開発に挑戦。現実的な目標設定と学習ロードマップを解説。">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://endless-measureapp.netlify.app/column/swift-beginner-7days.html">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Swift初心者は7日間で何が作れる？｜現実的な目標設定と学習計画",
+      "description": "Swift初心者が7日間でiOSアプリ開発に挑戦するための現実的な目標設定と学習ロードマップ。",
+      "author": {
+        "@type": "Person",
+        "name": "エンドレスフライト"
+      },
+      "datePublished": "2026-01-19"
+    }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Nunito:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #FFB6D9;
+            --color-secondary: #B4E4FF;
+            --color-accent: #FFC85C;
+            --color-success: #A1E3CB;
+            --color-text: #2D3436;
+            --color-text-light: #636E72;
+            --color-bg: #FFFBF5;
+            --font-heading: 'Poppins', 'Noto Sans JP', sans-serif;
+            --font-body: 'Nunito', 'Noto Sans JP', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.8;
+            color: var(--color-text);
+            background-color: var(--color-bg) !important;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #FFE5F0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #FF85B8;
+            transform: translateX(-5px);
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-text);
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .meta {
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+        }
+
+        .definition {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
+            border-left: 4px solid var(--color-primary);
+            padding: 25px;
+            margin: 40px 0;
+            border-radius: 12px;
+        }
+
+        .definition p {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.8;
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 50px 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--color-primary);
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 35px 0 20px 0;
+        }
+
+        p { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .timeline {
+            margin: 30px 0;
+        }
+
+        .timeline-item {
+            padding: 20px;
+            margin-bottom: 20px;
+            background: white;
+            border-left: 4px solid var(--color-secondary);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .timeline-day {
+            font-weight: 800;
+            color: var(--color-primary);
+            margin-bottom: 10px;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+            border: 3px solid var(--color-primary);
+            border-radius: 16px;
+            padding: 35px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #FF1493 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
+        }
+
+        footer {
+            margin-top: 80px;
+            padding: 40px 0 30px 0;
+            text-align: center;
+            border-top: 2px solid #FFE5F0;
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.6rem; }
+            h2 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← コラム一覧に戻る</a>
+            <h1>Swift初心者は7日間で何が作れる？｜現実的な目標設定と学習計画</h1>
+            <p class="meta">2026年1月19日 公開</p>
+        </header>
+
+        <main>
+            <div class="definition">
+                <p><strong>Swift初心者が7日間で作れるアプリは、最小限の機能に絞った単機能アプリです。</strong>カメラ撮影、データ保存、API連携など基本的な機能を組み合わせたアプリであれば、プログラミング経験ほぼゼロからでも完成させることができます。</p>
+            </div>
+
+            <section>
+                <h2>7日間で何が作れるのか：現実的な範囲</h2>
+                <p>Swift初心者が7日間で作れるアプリは、以下のような単機能アプリです：</p>
+                <ul style="margin: 20px 0; padding-left: 30px;">
+                    <li style="margin-bottom: 10px;">カメラで撮影して画像を保存するアプリ</li>
+                    <li style="margin-bottom: 10px;">APIと連携して情報を取得・表示するアプリ</li>
+                    <li style="margin-bottom: 10px;">簡単な計算や変換をするツールアプリ</li>
+                    <li style="margin-bottom: 10px;">メモやタスク管理などのシンプルなデータ管理アプリ</li>
+                </ul>
+                <p><strong>重要なポイント：</strong>完璧なアプリを目指すのではなく、「動く」ことを最優先にします。デザインの細部やエラーハンドリングは後回しでOKです。</p>
+            </section>
+
+            <section>
+                <h2>7日間の学習ロードマップ</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-day">Day 1-2: 環境構築と基礎学習</div>
+                        <p><strong>やること：</strong></p>
+                        <ul style="padding-left: 20px;">
+                            <li>Xcodeのインストール（無料、App Storeから）</li>
+                            <li>SwiftUIの基本構文を学習（1-2時間）</li>
+                            <li>Hello Worldアプリを作成</li>
+                        </ul>
+                        <p><strong>学習リソース：</strong>Apple公式チュートリアル、YouTube入門動画</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-day">Day 3-4: コア機能の実装</div>
+                        <p><strong>やること：</strong></p>
+                        <ul style="padding-left: 20px;">
+                            <li>アプリのメイン機能を1つ実装</li>
+                            <li>UI/UXの基本設計</li>
+                            <li>データの保存・読み込み</li>
+                        </ul>
+                        <p><strong>ポイント：</strong>AIアシスタント（Claude/ChatGPT）にエラーを質問しながら進める</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-day">Day 5-6: 機能の追加と調整</div>
+                        <p><strong>やること：</strong></p>
+                        <ul style="padding-left: 20px;">
+                            <li>必要な機能を追加（API連携、画像処理など）</li>
+                            <li>基本的なデザイン調整</li>
+                            <li>テスト・動作確認</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-day">Day 7: 仕上げ</div>
+                        <p><strong>やること：</strong></p>
+                        <ul style="padding-left: 20px;">
+                            <li>全体の動作確認</li>
+                            <li>致命的なバグの修正</li>
+                            <li>アプリアイコンの設定</li>
+                        </ul>
+                        <p><strong>ゴール：</strong>実機で動作するアプリの完成</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>必要な前提知識</h2>
+                <h3>ゼロから始められる？</h3>
+                <p>結論：<strong>プログラミング経験ほぼゼロでも始められます。</strong>ただし、以下があると有利です：</p>
+                <ul style="margin: 20px 0; padding-left: 30px;">
+                    <li style="margin-bottom: 10px;">パソコンの基本操作ができる</li>
+                    <li style="margin-bottom: 10px;">英語のエラーメッセージを読むのに抵抗がない</li>
+                    <li style="margin-bottom: 10px;">AIアシスタント（Claude/ChatGPT）を使える</li>
+                </ul>
+
+                <h3>Macは必須？</h3>
+                <p><strong>はい、Macが必須です。</strong>XcodeはMacでしか動作しません。最低スペック：</p>
+                <ul style="margin: 20px 0; padding-left: 30px;">
+                    <li>macOS 13以降</li>
+                    <li>メモリ8GB以上（16GB推奨）</li>
+                    <li>ストレージ空き容量30GB以上</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>初心者がつまずく3つのポイント</h2>
+                <h3>1. エラーメッセージが理解できない</h3>
+                <p><strong>対策：</strong>エラーメッセージをそのままClaude/ChatGPTに貼り付けて質問する。AIが日本語で解説してくれます。</p>
+
+                <h3>2. どこから始めればいいか分からない</h3>
+                <p><strong>対策：</strong>Apple公式の「SwiftUI Tutorials」から始める。日本語訳は不要、コードをコピペして動かすだけでOK。</p>
+
+                <h3>3. 完璧を目指しすぎる</h3>
+                <p><strong>対策：</strong>7日間では「動くアプリ」を最優先。デザインの細部やエラーハンドリングは後で改善できます。</p>
+            </section>
+
+            <section>
+                <h2>短期間で成果を出す3つのコツ</h2>
+                <h3>1. AIアシスタントを活用する</h3>
+                <p>Claude/ChatGPTに質問すれば、エラーの解決方法やコード例をすぐに教えてもらえます。1人で悩む時間を大幅に短縮できます。</p>
+
+                <h3>2. 最小限の機能に絞る</h3>
+                <p>「カメラで撮影→AI解析→結果表示」のように、コア機能だけに集中します。追加機能は完成後に実装しましょう。</p>
+
+                <h3>3. 完璧を目指さない</h3>
+                <p>7日間では「動くアプリ」を作ることが目標。デザインが粗くても、一部の機能が未実装でもOKです。</p>
+            </section>
+
+            <div class="cta-box">
+                <h3>📖 実際に7日間でアプリを作った記録</h3>
+                <p>つまずきポイント、AIとの対話、完成までの詳しい記録を公開中。</p>
+                <a href="https://note.com/endless_flight/n/n999dc56a2208" class="cta-button" target="_blank">詳しい開発記録を読む →</a>
+            </div>
+
+            <section>
+                <h2>まとめ：7日間でアプリは作れる</h2>
+                <p>Swift初心者でも、7日間で単機能のiOSアプリを完成させることは可能です。重要なのは、最小限の機能に絞り、完璧を目指さず、AIアシスタントを活用すること。</p>
+                <p>プログラミング経験ほぼゼロからでも、「動くアプリ」を作る成功体験を得ることができます。次のステップとして、実際の開発記録を読んで具体的なイメージを掴んでください。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 エンドレスフライト | <a href="index.html">コラム一覧</a> | <a href="https://note.com/endless_flight" target="_blank">note</a></p>
+        </footer>
+    </div>
+</body>
+</html>

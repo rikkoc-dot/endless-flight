@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja" style="color-scheme: light;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    
+    <title>Python初心者が株式投資管理を自動化した方法｜プログラミング未経験からの挑戦</title>
+    <meta name="description" content="プログラミング未経験からPythonで株式投資管理を自動化。銘柄の株価、配当利回り、ネットキャッシュ比率を自動取得する方法を解説します。">
+    <meta name="keywords" content="Python初心者,株式投資,自動化,プログラミング未経験,スクレイピング,AI活用">
+    
+    <meta property="og:title" content="Python初心者が株式投資管理を自動化した方法">
+    <meta property="og:description" content="プログラミング未経験からPythonで株式投資管理を自動化した実践記録。">
+    <meta property="og:type" content="article">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Python初心者が株式投資管理を自動化した方法",
+      "author": { "@type": "Person", "name": "エンドレスフライト" },
+      "datePublished": "2026-01-19"
+    }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Nunito:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #FFB6D9;
+            --color-secondary: #B4E4FF;
+            --color-accent: #FFC85C;
+            --color-success: #A1E3CB;
+            --color-text: #2D3436;
+            --color-text-light: #636E72;
+            --color-bg: #FFFBF5;
+            --font-heading: 'Poppins', 'Noto Sans JP', sans-serif;
+            --font-body: 'Nunito', 'Noto Sans JP', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.8;
+            color: var(--color-text);
+            background-color: var(--color-bg) !important;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #FFE5F0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .definition {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
+            border-left: 4px solid var(--color-primary);
+            padding: 25px;
+            margin: 40px 0;
+            border-radius: 12px;
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 50px 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--color-primary);
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 35px 0 20px 0;
+        }
+
+        .comparison-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-item {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .comparison-item.before {
+            border-left: 5px solid #FF6B6B;
+        }
+
+        .comparison-item.after {
+            border-left: 5px solid var(--color-success);
+        }
+
+        .feature-list {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border-left: 5px solid var(--color-secondary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+            border: 3px solid var(--color-primary);
+            border-radius: 16px;
+            padding: 35px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #FF1493 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        footer {
+            margin-top: 80px;
+            padding: 40px 0 30px 0;
+            text-align: center;
+            border-top: 2px solid #FFE5F0;
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+        }
+
+        @media (max-width: 768px) {
+            .comparison-box { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← コラム一覧に戻る</a>
+            <h1>Python初心者が株式投資管理を自動化した方法｜プログラミング未経験からの挑戦</h1>
+            <p class="meta">2026年1月19日 公開</p>
+        </header>
+
+        <main>
+            <div class="definition">
+                <p><strong>プログラミング未経験でも、PythonとAI（Claude）を活用すれば株式投資管理を自動化できます。</strong>銘柄の株価、配当利回り、ネットキャッシュ比率などを自動取得し、Googleスプレッドシートでの手作業を完全に不要にすることが可能です。</p>
+            </div>
+
+            <section>
+                <h2>プログラミング未経験が直面した課題</h2>
+                <p>株式投資をしていると、以下のような作業を毎日繰り返していました：</p>
+                <ul style="padding-left: 20px; margin: 15px 0;">
+                    <li>各銘柄の現在株価をWebサイトで確認</li>
+                    <li>Googleスプレッドシートに手入力</li>
+                    <li>過去5年高値からの凋落率を計算</li>
+                    <li>配当利回り、自己資本比率を転記</li>
+                    <li>ネットキャッシュ比率の高い銘柄をスクリーニング</li>
+                </ul>
+                <p>この作業、<strong>毎日30分〜1時間かかっていました。</strong></p>
+            </section>
+
+            <section>
+                <h2>Pythonでできることに気づいた瞬間</h2>
+                <p>筑波大学のPython教材を眺めていたとき、「Webスクレイピング」という章に目が止まりました。</p>
+                <p><strong>Webサイト内を巡回して、情報を自動で集める</strong>――これができるなら、株価データも自動取得できるのでは？</p>
+                <p>そこで、AI（Claude）に質問してみました：</p>
+                <blockquote style="background: #F5F5F5; padding: 20px; border-left: 4px solid var(--color-secondary); margin: 20px 0;">
+                    「Pythonを使って、銘柄コード一覧から株価・配当利回り・ネットキャッシュ比率を自動取得し、CSVで出力できますか？」
+                </blockquote>
+                <p>返ってきた答えは、あっさり。<strong>「できます」</strong></p>
+            </section>
+
+            <section>
+                <h2>Before / After：何が変わったか</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item before">
+                        <h3>❌ Before（手作業）</h3>
+                        <ul style="padding-left: 20px; margin: 15px 0;">
+                            <li>毎日30分〜1時間の作業</li>
+                            <li>転記ミスのリスク</li>
+                            <li>スクリーニング条件の変更が面倒</li>
+                            <li>過去データとの比較が困難</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-item after">
+                        <h3>✅ After（Python自動化）</h3>
+                        <ul style="padding-left: 20px; margin: 15px 0;">
+                            <li>ボタン1つで完了（数秒）</li>
+                            <li>転記ミスゼロ</li>
+                            <li>スクリーニング条件を即座に変更可能</li>
+                            <li>過去データとの比較が簡単</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>実装できた機能</h2>
+                <div class="feature-list">
+                    <h3>✅ 自動取得データ</h3>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li>現在株価</li>
+                        <li>過去5年高値</li>
+                        <li>凋落率（過去5年高値からの下落率）</li>
+                        <li>配当利回り</li>
+                        <li>自己資本比率</li>
+                        <li>ネットキャッシュ比率</li>
+                    </ul>
+                </div>
+
+                <div class="feature-list">
+                    <h3>✅ 出力形式</h3>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li>CSV形式（Excel / Google Sheets対応）</li>
+                        <li>銘柄コード一覧をCSVで用意するだけ</li>
+                        <li>Webアプリ化も可能（Claudeが提案）</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>プログラミング未経験でもできた理由</h2>
+                <h3>1. AIに聞きながら進めた</h3>
+                <p>わからないエラーはClaudeに貼り付けて質問。「このエラーの意味は？」「どう修正すればいい？」と聞けば、すぐに解決方法を教えてもらえました。</p>
+
+                <h3>2. 完璧を目指さなかった</h3>
+                <p>Pythonの文法やロジックを完全に理解しようとせず、「動けばOK」という割り切りで進めました。理解は使いながら深めていけばいいと考えました。</p>
+
+                <h3>3. 具体的な目的があった</h3>
+                <p>「Pythonを勉強する」ではなく「株式投資管理を楽にする」という明確な目的があったため、モチベーションが続きました。</p>
+            </section>
+
+            <section>
+                <h2>Pythonで自動化する3つのメリット</h2>
+                <h3>メリット1: 時間の節約</h3>
+                <p>毎日30分〜1時間かかっていた作業が数秒で完了。年間で180時間以上の節約になります。</p>
+
+                <h3>メリット2: データの正確性</h3>
+                <p>手入力による転記ミスがゼロに。常に最新の正確なデータで判断できます。</p>
+
+                <h3>メリット3: スクリーニング条件の柔軟性</h3>
+                <p>「ネットキャッシュ比率50%以上」「配当利回り3%以上」など、条件を即座に変更してスクリーニングできます。</p>
+            </section>
+
+            <section>
+                <h2>最初につまずいたポイント</h2>
+                <h3>1. インストールでつまずく</h3>
+                <p>教材がWindows前提だったのに対し、自分の環境はMac。Pythonのインストール、ターミナル、パスの設定で最初からつまずきました。</p>
+                <p><strong>解決方法：</strong>「Mac Python インストール」でGoogle検索し、AIに聞きながら進めました。</p>
+
+                <h3>2. 教材の内容がほとんど理解できない</h3>
+                <p>筑波大学の教材を読んでも、専門用語だらけで理解できませんでした。</p>
+                <p><strong>解決方法：</strong>コード部分だけコピーして実行。「動いた」「出力された」という体験を先に積みました。</p>
+
+                <h3>3. スクレイピングの仕組みがわからない</h3>
+                <p>Webサイトから情報を取得する仕組みが理解できませんでした。</p>
+                <p><strong>解決方法：</strong>Claudeに「株価を自動取得するコード例を教えて」と質問。すぐに動くコードを提供してもらえました。</p>
+            </section>
+
+            <div class="cta-box">
+                <h3>📖 Python初心者の実践記録</h3>
+                <p>筑波大学の教材、Webスクレイピングの発見、AIとの対話まで詳しく公開中。</p>
+                <a href="https://note.com/endless_flight/n/ne0fd6db69ac7" class="cta-button" target="_blank">詳しい開発記録を読む →</a>
+            </div>
+
+            <section>
+                <h2>まとめ：もっと早くやればよかった</h2>
+                <p>プログラミング未経験でも、PythonとAI（Claude）を活用すれば株式投資管理を自動化できます。重要なのは、完璧を目指さず「動かしてみる」こと、そしてAIに聞きながら進めることです。</p>
+                <p>毎日の手作業が数秒で完了する体験は、想像以上に快適でした。正直な感想は「もっと早くやればよかった」の一言です。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 エンドレスフライト | <a href="index.html">コラム一覧</a> | <a href="https://note.com/endless_flight" target="_blank">note</a></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja" style="color-scheme: light;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    
+    <title>Claude Skillsの作り方｜10分でAI専門コーチを作る方法</title>
+    <meta name="description" content="Claude Skillsを使えば、10分で専門知識を持ったAIコーチを作成できます。シャドーボクシングコーチを作った実例をもとに、Skill作成の手順と活用方法を解説します。">
+    <meta name="keywords" content="Claude Skills,AI,カスタマイズ,スキル作成,Claude,専門知識,AIコーチ">
+    
+    <meta property="og:title" content="Claude Skillsの作り方｜10分でAI専門コーチを作る方法">
+    <meta property="og:description" content="Claude Skillsを使えば、10分で専門知識を持ったAIコーチを作成できます。">
+    <meta property="og:type" content="article">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Claude Skillsの作り方｜10分でAI専門コーチを作る方法",
+      "author": { "@type": "Person", "name": "エンドレスフライト" },
+      "datePublished": "2026-01-19"
+    }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Nunito:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #FFB6D9;
+            --color-secondary: #B4E4FF;
+            --color-accent: #FFC85C;
+            --color-success: #A1E3CB;
+            --color-text: #2D3436;
+            --color-text-light: #636E72;
+            --color-bg: #FFFBF5;
+            --font-heading: 'Poppins', 'Noto Sans JP', sans-serif;
+            --font-body: 'Nunito', 'Noto Sans JP', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.8;
+            color: var(--color-text);
+            background-color: var(--color-bg) !important;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #FFE5F0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .definition {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
+            border-left: 4px solid var(--color-primary);
+            padding: 25px;
+            margin: 40px 0;
+            border-radius: 12px;
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 50px 0 25px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--color-primary);
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 35px 0 20px 0;
+        }
+
+        .step-box {
+            background: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border-left: 5px solid var(--color-accent);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--color-accent) 0%, #FFAA2C 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 800;
+            margin-right: 15px;
+        }
+
+        .use-case {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-success);
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+            border: 3px solid var(--color-primary);
+            border-radius: 16px;
+            padding: 35px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #FF1493 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        footer {
+            margin-top: 80px;
+            padding: 40px 0 30px 0;
+            text-align: center;
+            border-top: 2px solid #FFE5F0;
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← コラム一覧に戻る</a>
+            <h1>Claude Skillsの作り方｜10分でAI専門コーチを作る方法</h1>
+            <p class="meta">2026年1月19日 公開</p>
+        </header>
+
+        <main>
+            <div class="definition">
+                <p><strong>Claude Skillsとは、Claudeに専門知識や特定のタスク処理能力を追加できる機能です。</strong>マークダウンファイル（SKILL.md）で専門知識を定義することで、普通のChatbotを特定分野の専門家に変えることができます。作成時間は約10分、コーディング不要で対話形式で作成可能です。</p>
+            </div>
+
+            <section>
+                <h2>Claude Skillsとは何か</h2>
+                <p>Claude Skillsは、Claudeに専門知識を追加するカスタマイズ機能です。従来のChatbotとの違いは、<strong>専門知識を体系化して、いつでも呼び出せる形にできる</strong>点にあります。</p>
+                
+                <h3>普通のChatbotとの違い</h3>
+                <p><strong>普通のChatbot：</strong></p>
+                <ul style="padding-left: 20px; margin: 15px 0;">
+                    <li>毎回「〇〇について教えて」と質問する必要がある</li>
+                    <li>回答の質がその都度変わる可能性がある</li>
+                    <li>専門的な視点が一貫しない</li>
+                </ul>
+
+                <p><strong>Claude Skills：</strong></p>
+                <ul style="padding-left: 20px; margin: 15px 0;">
+                    <li>動画をアップロードするだけで自動的に専門家モードに切り替わる</li>
+                    <li>定義した分析項目に沿って一貫した評価が得られる</li>
+                    <li>専門用語や評価基準が統一される</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Claude Skillsで作れるもの</h2>
+                <p>Claude Skillsは、あらゆる専門分野のAIコーチを作成できます。</p>
+
+                <div class="use-case">
+                    <h4>🥊 スポーツ・運動系</h4>
+                    <ul style="padding-left: 20px; margin: 10px 0;">
+                        <li>シャドーボクシングフォーム分析コーチ</li>
+                        <li>ゴルフスイング診断レッスンプロ</li>
+                        <li>ダンス振付チェッカー</li>
+                    </ul>
+                </div>
+
+                <div class="use-case">
+                    <h4>🎨 クリエイティブ系</h4>
+                    <ul style="padding-left: 20px; margin: 10px 0;">
+                        <li>料理レシピ分析・栄養価計算アドバイザー</li>
+                        <li>英作文添削・文法チェッカー</li>
+                        <li>ギター練習フィードバックコーチ</li>
+                    </ul>
+                </div>
+
+                <div class="use-case">
+                    <h4>💼 ビジネス・日常系</h4>
+                    <ul style="padding-left: 20px; margin: 10px 0;">
+                        <li>家計簿分析・支出最適化アドバイザー</li>
+                        <li>プレゼン資料レビュアー</li>
+                        <li>コード</li>
+                    </ul>
+                </div>
+
+                <p><strong>重要なポイント：</strong>これらすべてが、コーディング不要で約10分で作成できます。</p>
+            </section>
+
+            <section>
+                <h2>Claude Skillsの作り方（10分で完成）</h2>
+
+                <div class="step-box">
+                    <h3><span class="step-number">1</span>skill-creatorを起動</h3>
+                    <p>Claudeに「skill-creatorを使って、〇〇のSkillを作ってください」と依頼します。</p>
+                    <p><strong>例：</strong>「skill-creatorを使って、シャドーボクシングのフォーム分析Skillを作ってください」</p>
+                </div>
+
+                <div class="step-box">
+                    <h3><span class="step-number">2</span>要件を対話形式で伝える</h3>
+                    <p>Claudeが以下を質問してくるので、順番に答えます：</p>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li>対象者のレベル（初心者・中級者・上級者）</li>
+                        <li>使用シーン（動画分析・メニュー相談など）</li>
+                        <li>重視するポイント</li>
+                    </ul>
+                </div>
+
+                <div class="step-box">
+                    <h3><span class="step-number">3</span>SKILL.mdが自動生成される</h3>
+                    <p>対話が終わると、Claudeが専門知識を体系化した「SKILL.md」というマークダウンファイルを自動生成します。</p>
+                    <p>内容には、分析ポイント、評価基準、改善アドバイスのテンプレートなどが含まれます。</p>
+                </div>
+
+                <div class="step-box">
+                    <h3><span class="step-number">4</span>パッケージ化してインストール</h3>
+                    <p>Claudeが「.skill」ファイルとしてパッケージ化します。このファイルをClaudeにインストールすれば、専門コーチとして使えるようになります。</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>実際にSkillを使うと何が起きるか</h2>
+                <p>例えば、シャドーボクシングコーチSkillを作成した場合：</p>
+
+                <h3>使い方</h3>
+                <ol style="padding-left: 20px; margin: 15px 0;">
+                    <li>シャドーボクシングの動画をアップロード</li>
+                    <li>Skillが自動起動</li>
+                    <li>スタンス、パンチ、フットワーク、ガード、ヘッドムーブメント、リズムを評価</li>
+                    <li>10点満点でスコアリング</li>
+                    <li>優先度順に改善点を提示</li>
+                    <li>2週間〜3ヶ月のトレーニングプランを提案</li>
+                </ol>
+
+                <p><strong>重要：</strong>これが対話ゼロで自動的に実行されます。毎回「分析してください」と言う必要はありません。</p>
+            </section>
+
+            <section>
+                <h2>Claude Skillsのメリット</h2>
+
+                <h3>1. 専門知識の体系化</h3>
+                <p>バラバラだった知識を、分析項目・評価基準・改善提案という形で構造化できます。</p>
+
+                <h3>2. 継続的な改善が可能</h3>
+                <p>Skillは初期バージョンから始まり、使いながら「この項目も追加したい」とフィードバックすることで一緒に成長していきます。</p>
+
+                <h3>3. 10分で作れる手軽さ</h3>
+                <p>skill-creatorを使えば、対話形式でSkillが完成します。コードを書く必要はありません。</p>
+
+                <h3>4. 非エンジニアでも作れる</h3>
+                <p>プログラミング知識不要。専門分野の知識さえあれば、誰でもSkillを作成できます。</p>
+            </section>
+
+            <div class="cta-box">
+                <h3>📖 実際に10分でSkillを作った実践記録</h3>
+                <p>シャドーボクシングコーチSkillの作成過程、使ってみた結果、改善ポイントまで詳しく公開中。</p>
+                <a href="https://note.com/endless_flight/n/n36720d468e56" class="cta-button" target="_blank">詳しい開発記録を読む →</a>
+            </div>
+
+            <section>
+                <h2>まとめ：個人の専門AIコーチを持つ時代</h2>
+                <p>Claude Skillsを使えば、10分で専門知識を持ったAIコーチを作成できます。スポーツ、クリエイティブ、ビジネス、あらゆる分野で「自分専用のAIコーチ」を持つことが可能です。</p>
+                <p>重要なのは、コーディング不要で対話形式で作成でき、使いながら継続的に改善できること。非エンジニアでも、専門知識さえあれば誰でもSkillを作れる時代になりました。</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 エンドレスフライト | <a href="index.html">コラム一覧</a> | <a href="https://note.com/endless_flight" target="_blank">note</a></p>
+        </footer>
+    </div>
+</body>
+</html>
