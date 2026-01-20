@@ -147,6 +147,52 @@
             box-sizing: border-box;
         }
         
+        /* ===== エンドレスフライト ナビゲーション ===== */
+        .endless-flight-nav {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
+            padding: 20px;
+            border-bottom: 2px solid #FFB6D9;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+        }
+
+        .endless-flight-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .endless-flight-nav-logo {
+            font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF1493 0%, #FFB6D9 50%, #B4E4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .endless-flight-nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .endless-flight-nav-links a {
+            color: #2D3436;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .endless-flight-nav-links a:hover {
+            color: #FFB6D9;
+        }
+        
         :root {
             /* Kawaii Pastel Colors */
             --primary: #FF9ECD;
@@ -175,12 +221,13 @@
             line-height: 1.8;
             color: var(--neutral-800);
             background: linear-gradient(180deg, #FFF9F9 0%, #FFE5EE 100%);
+            padding-top: 80px; /* エンドレスフライトナビ分の余白 */
         }
         
         /* Header */
         header {
             position: fixed;
-            top: 0;
+            top: 80px; /* エンドレスフライトナビの下 */
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -784,6 +831,22 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            body {
+                padding-top: 70px; /* スマホ用 */
+            }
+            
+            header {
+                top: 70px;
+            }
+            
+            .endless-flight-nav-links {
+                gap: 15px;
+            }
+            
+            .endless-flight-nav-links a {
+                font-size: 0.9rem;
+            }
+            
             .definition-section {
                 padding: 1.5rem 1rem;
             }
@@ -843,6 +906,19 @@
     </style>
 </head>
 <body>
+    <!-- ===== エンドレスフライト ナビゲーション ===== -->
+    <div class="endless-flight-nav">
+        <div class="endless-flight-nav-container">
+            <a href="../index.html" class="endless-flight-nav-logo">Endless Flight</a>
+            <div class="endless-flight-nav-links">
+                <a href="../index.html">Top</a>
+                <a href="../column/">コラム</a>
+                <a href="./">アプリ</a>
+                <a href="https://note.com/endless_flight" target="_blank">Note</a>
+            </div>
+        </div>
+    </div>
+
     <header>
         <nav>
             <div class="logo">MeasureApp</div>
