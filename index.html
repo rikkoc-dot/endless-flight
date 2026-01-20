@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja" style="color-scheme: light;">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9JQ6ZMWQ6S"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9JQ6ZMWQ6S');
-</script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light only">
@@ -43,18 +33,48 @@
             background-color: var(--color-bg) !important;
         }
 
-        header {
-            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+        /* ナビゲーション */
+        nav {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
             padding: 20px;
-            text-align: center;
-            border-bottom: 3px solid var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        header h1 {
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
             font-family: var(--font-heading);
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FF1493 0%, #FFB6D9 50%, #B4E4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-primary);
         }
 
         /* ロゴセクション */
@@ -93,7 +113,9 @@
         .column-section {
             max-width: 1200px;
             margin: 80px auto;
-            padding: 0 20px;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #E5F4FF 0%, #F0F9FF 100%);
+            border-radius: 30px;
         }
 
         .section-header {
@@ -404,7 +426,9 @@
         .other-section {
             max-width: 1200px;
             margin: 80px auto;
-            padding: 0 20px;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8F4 100%);
+            border-radius: 30px;
         }
 
         .app-card {
@@ -585,19 +609,30 @@
         }
 
         @media (max-width: 768px) {
+            .nav-links { gap: 15px; font-size: 0.9rem; }
             .logo-section h2 { font-size: 2rem; }
             .section-title { font-size: 2rem; }
             .articles-grid { grid-template-columns: 1fr; }
             .app-card { flex-direction: column; padding: 30px; }
             .app-image { width: 200px; height: 200px; font-size: 3rem; }
+            .column-section { padding: 40px 15px; }
+            .other-section { padding: 40px 15px; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>エンドレスフライト note</h1>
-        <p>AI・Python学習と推し活の等身大記録</p>
-    </header>
+    <!-- ナビゲーション -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">Endless Flight</a>
+            <div class="nav-links">
+                <a href="index.html">Top</a>
+                <a href="column/">コラム</a>
+                <a href="lp/">アプリ</a>
+                <a href="https://note.com/endless_flight" target="_blank">Note</a>
+            </div>
+        </div>
+    </nav>
 
     <!-- ロゴセクション -->
     <section class="logo-section">
