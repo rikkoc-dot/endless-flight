@@ -1,45 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja" style="color-scheme: light;">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-9JQ6ZMWQ6S"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-9JQ6ZMWQ6S');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light only">
     
-    <!-- SEO Meta Tags -->
-    <title>エンドレスフライト - AI・プログラミング学習の等身大の記録</title>
-    <meta name="description" content="「とりあえず触ってみよう」でAI、Python学習を始めました。日常のちょっとした作業をAIやPythonで楽にできないか、試行錯誤中。できるようになったことも、つまずいたことも等身大で記録していきます。">
-    <meta name="keywords" content="AI,プログラミング,Python,Swift,Claude,個人開発,学習記録,初心者">
+    <title>コラム一覧｜エンドレスフライト - AI・Python学習と推し活の記録</title>
+    <meta name="description" content="AI・Python学習、推し活、投資分析に関するコラム記事一覧。プログラミング初心者の等身大の学習記録を公開中。">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="エンドレスフライト - AI・プログラミング学習の等身大の記録">
-    <meta property="og:description" content="AI、Python学習の等身大の記録。試行錯誤の過程を共有します。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://endless-measureapp.netlify.app/column/">
-    
-    <!-- Structured Data - Blog -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Blog",
-      "name": "エンドレスフライト",
-      "description": "AI・プログラミング学習の等身大の記録",
-      "url": "https://endless-measureapp.netlify.app/column/"
-    }
-    </script>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Nunito:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -50,399 +19,378 @@
             --color-text: #2D3436;
             --color-text-light: #636E72;
             --color-bg: #FFFBF5;
-            --color-card: #FFFFFF;
             --font-heading: 'Poppins', 'Noto Sans JP', sans-serif;
             --font-body: 'Nunito', 'Noto Sans JP', sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            color-scheme: light;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: var(--font-body);
-            line-height: 1.6;
+            line-height: 1.8;
             color: var(--color-text);
             background-color: var(--color-bg) !important;
-            overflow-x: hidden;
         }
 
+        /* ナビゲーション */
+        nav {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
+            padding: 20px;
+            border-bottom: 2px solid var(--color-primary);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF1493 0%, #FFB6D9 50%, #B4E4FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-primary);
+        }
+
+        /* コンテナ */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
-            background-color: var(--color-bg);
+            padding: 60px 20px;
         }
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
-            padding: 80px 20px;
+        /* ヘッダー */
+        .page-header {
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 60px;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 182, 217, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(180, 228, 255, 0.1) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
+        .page-header h1 {
             font-family: var(--font-heading);
             font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--color-primary) 0%, #FF1493 100%);
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF1493 0%, #FFB6D9 50%, #B4E4FF 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             margin-bottom: 20px;
         }
 
-        .hero p {
-            font-size: 1.15rem;
-            color: var(--color-text);
-            font-weight: 700;
-            max-width: 700px;
-            margin: 0 auto 30px;
-            line-height: 1.8;
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--color-text-light);
         }
 
-        /* Category Pills */
-        .category-filters {
+        /* フィルター */
+        .filter-container {
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin: 40px 0;
             flex-wrap: wrap;
+            margin-bottom: 50px;
         }
 
-        .category-pill {
+        .filter-btn {
             padding: 12px 30px;
-            border: none;
+            border: 2px solid var(--color-primary);
+            background: white;
+            color: var(--color-primary);
             border-radius: 25px;
-            font-family: var(--font-body);
             font-weight: 700;
-            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: white;
-            color: var(--color-text);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            font-family: var(--font-body);
+            font-size: 1rem;
         }
 
-        .category-pill:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .category-pill.active,
-        .category-pill[data-category="all"].active {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #FF85B8 100%);
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--color-primary);
             color: white;
         }
 
-        .category-pill[data-category="programming"].active {
-            background: linear-gradient(135deg, #B4E4FF 0%, #6BB6FF 100%);
-        }
-
-        .category-pill[data-category="marketing"].active {
-            background: linear-gradient(135deg, #A1E3CB 0%, #5FD9A8 100%);
-        }
-
-        .category-pill[data-category="ai"].active {
-            background: linear-gradient(135deg, #E5CCFF 0%, #C78FFF 100%);
-        }
-
-        /* Articles Grid */
+        /* 記事グリッド */
         .articles-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 30px;
-            margin: 50px 0;
+            margin-bottom: 80px;
         }
 
         .article-card {
             background: white;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            cursor: pointer;
             text-decoration: none;
             color: inherit;
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
 
         .article-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .article-card.coming-soon {
-            opacity: 0.6;
-            pointer-events: none;
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
         .article-thumbnail {
+            width: 100%;
             height: 200px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .thumbnail-pattern {
-            width: 100%;
-            height: 100%;
+        .article-thumbnail.tech {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        .coming-soon-badge {
+        .article-thumbnail.oshi {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .article-thumbnail.investment {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .article-thumbnail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+        }
+
+        .article-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 20px,
+                rgba(255, 255, 255, 0.03) 20px,
+                rgba(255, 255, 255, 0.03) 40px
+            );
+        }
+
+        .thumbnail-icon {
+            font-size: 5rem;
+            color: white;
+            opacity: 0.25;
+            z-index: 1;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .article-category {
             position: absolute;
             top: 15px;
-            right: 15px;
+            left: 15px;
+            padding: 8px 18px;
             background: rgba(255, 255, 255, 0.95);
-            color: var(--color-text);
-            padding: 8px 20px;
+            backdrop-filter: blur(10px);
             border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 700;
-            font-size: 0.85rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            z-index: 2;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-category.tech {
+            color: #667eea;
+        }
+
+        .article-category.oshi {
+            color: #f5576c;
+        }
+
+        .article-category.investment {
+            color: #00f2fe;
         }
 
         .article-content {
             padding: 25px;
-        }
-
-        .article-category {
-            display: inline-block;
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .category-programming {
-            background: linear-gradient(135deg, #B4E4FF 0%, #D4F1FF 100%);
-            color: #1E3A8A;
-        }
-
-        .category-marketing {
-            background: linear-gradient(135deg, #A1E3CB 0%, #D1F2E6 100%);
-            color: #065F46;
-        }
-
-        .category-ai {
-            background: linear-gradient(135deg, #E5CCFF 0%, #F3E5FF 100%);
-            color: #6B21A8;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .article-title {
             font-family: var(--font-heading);
             font-size: 1.3rem;
             font-weight: 700;
-            color: var(--color-text);
             margin-bottom: 12px;
             line-height: 1.4;
         }
 
-        .article-excerpt {
+        .article-description {
             color: var(--color-text-light);
             font-size: 0.95rem;
             line-height: 1.6;
             margin-bottom: 15px;
+            flex: 1;
         }
 
         .article-meta {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 15px;
             font-size: 0.85rem;
             color: var(--color-text-light);
         }
 
-        /* Popular Ranking */
-        .popular-section {
-            margin: 80px 0;
+        /* ランキング */
+        .ranking-section {
+            background: linear-gradient(135deg, #FFE5F0 0%, #FFF8F0 100%);
+            padding: 50px 30px;
+            border-radius: 20px;
+            margin-bottom: 60px;
         }
 
-        .section-title {
+        .ranking-section h2 {
             font-family: var(--font-heading);
             font-size: 2rem;
             font-weight: 800;
-            color: var(--color-text);
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
-        .popular-list {
+        .ranking-list {
+            display: grid;
+            gap: 20px;
             max-width: 800px;
             margin: 0 auto;
         }
 
-        .popular-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 25px;
+        .ranking-item {
             background: white;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
             text-decoration: none;
             color: inherit;
+            transition: all 0.3s ease;
         }
 
-        .popular-item:hover {
+        .ranking-item:hover {
             transform: translateX(10px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .rank-badge {
+        .ranking-number {
             font-family: var(--font-heading);
             font-size: 2rem;
-            font-weight: 800;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            font-weight: 900;
+            color: var(--color-primary);
+            min-width: 40px;
         }
 
-        .rank-1 {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: white;
+        .ranking-content h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
-        .rank-2 {
-            background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
-            color: white;
-        }
-
-        .rank-3 {
-            background: linear-gradient(135deg, #CD7F32 0%, #B8733C 100%);
-            color: white;
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 100px;
-            padding: 40px 0 30px 0;
-            text-align: center;
-            border-top: 2px solid #FFE5F0;
-            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
-        }
-
-        footer p {
-            color: var(--color-text);
+        .ranking-content p {
             font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        /* フッター */
+        footer {
+            background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 50%, #FFF8E5 100%);
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 100px;
+            border-top: 3px solid var(--color-primary);
         }
 
         footer a {
             color: var(--color-primary);
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
         }
 
-        footer a:hover {
-            color: #FF1493;
-            text-decoration: underline;
-        }
-
-        /* Responsive */
+        /* レスポンシブ */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .articles-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .category-filters {
-                gap: 10px;
-            }
-
-            .category-pill {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
+            .nav-links { gap: 15px; font-size: 0.9rem; }
+            .page-header h1 { font-size: 2rem; }
+            .articles-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>エンドレスフライト</h1>
-            <p>「とりあえず触ってみよう」でAI、Python学習を始めました。日常のちょっとした作業や推し活をAIやPythonで楽にできないか、試行錯誤中。できるようになったことも、つまずいたことも等身大で記録していきます。</p>
+    <!-- ナビゲーション -->
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">Endless Flight</a>
+            <div class="nav-links">
+                <a href="../index.html">Top</a>
+                <a href="index.html">コラム</a>
+                <a href="../lp/">アプリ</a>
+                <a href="https://note.com/endless_flight" target="_blank">Note</a>
+            </div>
         </div>
-    </section>
+    </nav>
 
     <div class="container">
-        <!-- Category Filters -->
-        <div class="category-filters">
-            <button class="category-pill active" data-category="all">すべて</button>
-            <button class="category-pill" data-category="programming">プログラミング</button>
-            <button class="category-pill" data-category="marketing">マーケティング</button>
-            <button class="category-pill" data-category="ai">AI活用</button>
+        <!-- ページヘッダー -->
+        <div class="page-header">
+            <h1>エンドレスフライト</h1>
+            <p>「とりあえず触ってみよう」でAI、Python学習を始めました。<br>
+            日常のちょっとした作業や推し活をAIやPythonで楽にできないか、試行錯誤中。</p>
         </div>
 
-        <!-- Articles Grid -->
+        <!-- フィルター -->
+        <div class="filter-container">
+            <button class="filter-btn active" data-category="all">すべて</button>
+            <button class="filter-btn" data-category="tech">プログラミング・AI</button>
+            <button class="filter-btn" data-category="oshi">推し活</button>
+            <button class="filter-btn" data-category="investment">投資・分析</button>
+        </div>
+
+        <!-- 記事グリッド -->
         <div class="articles-grid">
-            <!-- Article 1: Swift -->
-            <a href="swift-beginner-7days.html" class="article-card" data-category="programming">
-                <div class="article-thumbnail">
-                    <svg class="thumbnail-pattern" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#B4E4FF;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#6BB6FF;stop-opacity:1" />
-                            </linearGradient>
-                            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5" opacity="0.3"/>
-                            </pattern>
-                        </defs>
-                        <rect width="400" height="200" fill="url(#grad1)"/>
-                        <rect width="400" height="200" fill="url(#grid)"/>
-                        <text x="200" y="100" font-family="monospace" font-size="48" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.8">{ }</text>
-                    </svg>
+            <a href="swift-beginner-7days.html" class="article-card" data-category="tech">
+                <div class="article-thumbnail tech">
+                    <div class="thumbnail-icon">{ }</div>
+                    <span class="article-category tech">プログラミング・AI</span>
                 </div>
                 <div class="article-content">
-                    <span class="article-category category-programming">プログラミング</span>
-                    <h2 class="article-title">Swift初心者は7日間で何が作れる？｜現実的な目標設定と学習計画</h2>
-                    <p class="article-excerpt">プログラミング初心者がSwiftで7日間アプリ開発に挑戦。現実的な目標設定と学習ロードマップを解説します。</p>
+                    <h3 class="article-title">Swift初心者は7日間で何が作れる？</h3>
+                    <p class="article-description">プログラミング経験ほぼゼロから7日間でiOSアプリ開発に挑戦</p>
                     <div class="article-meta">
                         <span>📅 2026年1月19日</span>
                         <span>⏱️ 8分</span>
@@ -450,28 +398,14 @@
                 </div>
             </a>
 
-            <!-- Article 2: AI App Development -->
-            <a href="ai-app-development.html" class="article-card" data-category="ai">
-                <div class="article-thumbnail">
-                    <svg class="thumbnail-pattern" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#FFB6D9;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#FFC85C;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="400" height="200" fill="url(#grad2)"/>
-                        <circle cx="100" cy="60" r="30" fill="white" opacity="0.2"/>
-                        <circle cx="200" cy="100" r="40" fill="white" opacity="0.3"/>
-                        <circle cx="300" cy="80" r="35" fill="white" opacity="0.2"/>
-                        <line x1="100" y1="60" x2="200" y2="100" stroke="white" stroke-width="2" opacity="0.4"/>
-                        <line x1="200" y1="100" x2="300" y2="80" stroke="white" stroke-width="2" opacity="0.4"/>
-                    </svg>
+            <a href="ai-app-development.html" class="article-card" data-category="tech">
+                <div class="article-thumbnail tech">
+                    <div class="thumbnail-icon">🤖</div>
+                    <span class="article-category tech">プログラミング・AI</span>
                 </div>
                 <div class="article-content">
-                    <span class="article-category category-ai">AI活用</span>
-                    <h2 class="article-title">AI（Claude）と一緒にアプリ開発する5つのメリット｜初心者こそAIを使うべき理由</h2>
-                    <p class="article-excerpt">プログラミング初心者がAIを活用することで学習効率が3倍に。具体的なメリットと活用方法を解説。</p>
+                    <h3 class="article-title">AI（Claude）と一緒にアプリ開発する5つのメリット</h3>
+                    <p class="article-description">学習効率が3倍に。エラー解決、学習速度、成功体験を解説</p>
                     <div class="article-meta">
                         <span>📅 2026年1月19日</span>
                         <span>⏱️ 7分</span>
@@ -479,28 +413,14 @@
                 </div>
             </a>
 
-            <!-- Article 3: LLMO -->
-            <a href="llmo-optimization.html" class="article-card" data-category="marketing">
-                <div class="article-thumbnail">
-                    <svg class="thumbnail-pattern" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#A1E3CB;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#5FD9A8;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="400" height="200" fill="url(#grad3)"/>
-                        <rect x="50" y="50" width="80" height="40" fill="white" opacity="0.3" rx="5"/>
-                        <rect x="160" y="80" width="80" height="40" fill="white" opacity="0.4" rx="5"/>
-                        <rect x="270" y="60" width="80" height="40" fill="white" opacity="0.3" rx="5"/>
-                        <line x1="130" y1="70" x2="160" y2="100" stroke="white" stroke-width="3" opacity="0.5"/>
-                        <line x1="240" y1="100" x2="270" y2="80" stroke="white" stroke-width="3" opacity="0.5"/>
-                    </svg>
+            <a href="llmo-optimization.html" class="article-card" data-category="tech">
+                <div class="article-thumbnail tech">
+                    <div class="thumbnail-icon">🔍</div>
+                    <span class="article-category tech">プログラミング・AI</span>
                 </div>
                 <div class="article-content">
-                    <span class="article-category category-marketing">マーケティング</span>
-                    <h2 class="article-title">LLMO（生成AI最適化）とは？｜ChatGPT・Perplexityに引用されるための基礎知識</h2>
-                    <p class="article-excerpt">2025年、Google検索の40%以上がAI Overviewsに。生成AI時代の新しいマーケティング手法LLMOを解説。</p>
+                    <h3 class="article-title">LLMO（生成AI最適化）とは？</h3>
+                    <p class="article-description">ChatGPT/Perplexity/Claudeに引用されるための実装要件</p>
                     <div class="article-meta">
                         <span>📅 2026年1月19日</span>
                         <span>⏱️ 10分</span>
@@ -508,115 +428,178 @@
                 </div>
             </a>
 
-            <!-- Coming Soon Articles -->
-            <div class="article-card coming-soon" data-category="ai">
-                <div class="article-thumbnail">
-                    <svg class="thumbnail-pattern" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#E5CCFF;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#C78FFF;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="400" height="200" fill="url(#grad4)"/>
-                        <path d="M 50 100 Q 100 50 150 100 T 250 100 T 350 100" stroke="white" stroke-width="3" fill="none" opacity="0.4"/>
-                        <circle cx="50" cy="100" r="5" fill="white" opacity="0.6"/>
-                        <circle cx="150" cy="100" r="5" fill="white" opacity="0.6"/>
-                        <circle cx="250" cy="100" r="5" fill="white" opacity="0.6"/>
-                        <circle cx="350" cy="100" r="5" fill="white" opacity="0.6"/>
-                    </svg>
-                    <span class="coming-soon-badge">Coming Soon</span>
+            <a href="claude-skills-tutorial.html" class="article-card" data-category="tech">
+                <div class="article-thumbnail tech">
+                    <div class="thumbnail-icon">⚡</div>
+                    <span class="article-category tech">プログラミング・AI</span>
                 </div>
                 <div class="article-content">
-                    <span class="article-category category-ai">AI活用</span>
-                    <h2 class="article-title">Claude Skillsの作り方｜10分でAI専門コーチを作った実践記録</h2>
-                    <p class="article-excerpt">Claude Skillsを使って、シャドーボクシングコーチを10分で作成。Skill作成の具体的な手順を解説。</p>
+                    <h3 class="article-title">Claude Skillsの作り方｜10分で専門知識を追加</h3>
+                    <p class="article-description">Claudeに専門知識を追加して自動起動させる方法</p>
                     <div class="article-meta">
-                        <span>📅 近日公開</span>
+                        <span>📅 2026年1月19日</span>
                         <span>⏱️ 6分</span>
                     </div>
                 </div>
-            </div>
+            </a>
 
-            <div class="article-card coming-soon" data-category="programming">
-                <div class="article-thumbnail">
-                    <svg class="thumbnail-pattern" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="grad5" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#B4E4FF;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#6BB6FF;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="400" height="200" fill="url(#grad5)"/>
-                        <circle cx="200" cy="100" r="60" fill="none" stroke="white" stroke-width="4" opacity="0.4"/>
-                        <circle cx="200" cy="100" r="40" fill="none" stroke="white" stroke-width="3" opacity="0.5"/>
-                        <circle cx="200" cy="100" r="20" fill="white" opacity="0.6"/>
-                    </svg>
-                    <span class="coming-soon-badge">Coming Soon</span>
+            <a href="python-stock-automation.html" class="article-card" data-category="tech">
+                <div class="article-thumbnail tech">
+                    <div class="thumbnail-icon">📊</div>
+                    <span class="article-category tech">プログラミング・AI</span>
                 </div>
                 <div class="article-content">
-                    <span class="article-category category-programming">プログラミング</span>
-                    <h2 class="article-title">カメラで重さを測定するiPhoneアプリの作り方｜MeasureApp開発秘話</h2>
-                    <p class="article-excerpt">Gemini APIを使った画像認識アプリの開発手順。カメラで撮影するだけで重さを測定する仕組みを解説。</p>
+                    <h3 class="article-title">Python初心者が株式投資管理を自動化した方法</h3>
+                    <p class="article-description">プログラミング未経験からPythonで株式投資管理を自動化</p>
                     <div class="article-meta">
-                        <span>📅 近日公開</span>
+                        <span>📅 2026年1月19日</span>
                         <span>⏱️ 9分</span>
                     </div>
                 </div>
-            </div>
+            </a>
+
+            <a href="notebooklm-learning.html" class="article-card" data-category="tech">
+                <div class="article-thumbnail tech">
+                    <div class="thumbnail-icon">📚</div>
+                    <span class="article-category tech">プログラミング・AI</span>
+                </div>
+                <div class="article-content">
+                    <h3 class="article-title">AIで資料の読み方が変わった話｜NotebookLM活用法</h3>
+                    <p class="article-description">PDFをAIに読ませて整理する新しい学習スタイル</p>
+                    <div class="article-meta">
+                        <span>📅 2026年1月19日</span>
+                        <span>⏱️ 7分</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="kouhaku-ai-analysis.html" class="article-card" data-category="oshi">
+                <div class="article-thumbnail oshi">
+                    <div class="thumbnail-icon">📺</div>
+                    <span class="article-category oshi">推し活</span>
+                </div>
+                <div class="article-content">
+                    <h3 class="article-title">AIで紅白歌合戦を分析する方法</h3>
+                    <p class="article-description">瞬間視聴率データから見えてくる「本当に選ばれた瞬間」</p>
+                    <div class="article-meta">
+                        <span>📅 2026年1月19日</span>
+                        <span>⏱️ 8分</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="nogizaka-dance-analysis.html" class="article-card" data-category="oshi">
+                <div class="article-thumbnail oshi">
+                    <div class="thumbnail-icon">💫</div>
+                    <span class="article-category oshi">推し活</span>
+                </div>
+                <div class="article-content">
+                    <h3 class="article-title">乃木坂46のダンスはなぜ心に触れるのか</h3>
+                    <p class="article-description">共鳴感という表現の秘密。呼吸と間、視線と重心の分析</p>
+                    <div class="article-meta">
+                        <span>📅 2026年1月19日</span>
+                        <span>⏱️ 9分</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="rekodai-same-numbers.html" class="article-card" data-category="oshi">
+                <div class="article-thumbnail oshi">
+                    <div class="thumbnail-icon">🎵</div>
+                    <span class="article-category oshi">推し活</span>
+                </div>
+                <div class="article-content">
+                    <h3 class="article-title">レコード大賞「Same numbers」が壮大なオペラ歌劇だった話</h3>
+                    <p class="article-description">すべてが重なった瞬間。推し活の記録</p>
+                    <div class="article-meta">
+                        <span>📅 2026年1月19日</span>
+                        <span>⏱️ 7分</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="tenbagger-ai-analysis.html" class="article-card" data-category="investment">
+                <div class="article-thumbnail investment">
+                    <div class="thumbnail-icon">🚀</div>
+                    <span class="article-category investment">投資・分析</span>
+                </div>
+                <div class="article-content">
+                    <h3 class="article-title">AIで学術論文を読んでテンバガー銘柄をスクリーニング</h3>
+                    <p class="article-description">NotebookLMで論文分析。10倍株の共通パターンを抽出</p>
+                    <div class="article-meta">
+                        <span>📅 2026年1月19日</span>
+                        <span>⏱️ 10分</span>
+                    </div>
+                </div>
+            </a>
         </div>
 
-        <!-- Popular Ranking -->
-        <section class="popular-section">
-            <h2 class="section-title">人気記事ランキング</h2>
-            <div class="popular-list">
-                <a href="swift-beginner-7days.html" class="popular-item">
-                    <div class="rank-badge rank-1">1</div>
-                    <div>
-                        <h3 class="article-title" style="margin-bottom: 8px;">Swift初心者は7日間で何が作れる？</h3>
-                        <p class="article-excerpt" style="margin: 0;">現実的な目標設定と学習ロードマップ</p>
+        <!-- 人気記事ランキング -->
+        <div class="ranking-section">
+            <h2>🏆 人気記事ランキング TOP5</h2>
+            <div class="ranking-list">
+                <a href="llmo-optimization.html" class="ranking-item">
+                    <div class="ranking-number">1</div>
+                    <div class="ranking-content">
+                        <h3>LLMO（生成AI最適化）とは？</h3>
+                        <p>ChatGPT/Claudeに引用されるための実装要件</p>
                     </div>
                 </a>
 
-                <a href="llmo-optimization.html" class="popular-item">
-                    <div class="rank-badge rank-2">2</div>
-                    <div>
-                        <h3 class="article-title" style="margin-bottom: 8px;">LLMO（生成AI最適化）とは？</h3>
-                        <p class="article-excerpt" style="margin: 0;">ChatGPT・Perplexityに引用されるための基礎知識</p>
+                <a href="swift-beginner-7days.html" class="ranking-item">
+                    <div class="ranking-number">2</div>
+                    <div class="ranking-content">
+                        <h3>Swift初心者は7日間で何が作れる？</h3>
+                        <p>プログラミング経験ゼロから7日間でiOSアプリ開発</p>
                     </div>
                 </a>
 
-                <a href="ai-app-development.html" class="popular-item">
-                    <div class="rank-badge rank-3">3</div>
-                    <div>
-                        <h3 class="article-title" style="margin-bottom: 8px;">AI（Claude）と一緒にアプリ開発する5つのメリット</h3>
-                        <p class="article-excerpt" style="margin: 0;">初心者こそAIを使うべき理由</p>
+                <a href="ai-app-development.html" class="ranking-item">
+                    <div class="ranking-number">3</div>
+                    <div class="ranking-content">
+                        <h3>AI（Claude）と一緒にアプリ開発する5つのメリット</h3>
+                        <p>学習効率が3倍に。初心者でも挫折しない開発体験</p>
+                    </div>
+                </a>
+
+                <a href="python-stock-automation.html" class="ranking-item">
+                    <div class="ranking-number">4</div>
+                    <div class="ranking-content">
+                        <h3>Python初心者が株式投資管理を自動化した方法</h3>
+                        <p>プログラミング未経験からPythonで自動化</p>
+                    </div>
+                </a>
+
+                <a href="nogizaka-dance-analysis.html" class="ranking-item">
+                    <div class="ranking-number">5</div>
+                    <div class="ranking-content">
+                        <h3>乃木坂46のダンスはなぜ心に触れるのか</h3>
+                        <p>共鳴感という表現の秘密を分析</p>
                     </div>
                 </a>
             </div>
-        </section>
+        </div>
     </div>
 
-    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 エンドレスフライト | <a href="https://endless-measureapp.netlify.app/">MeasureApp LP</a> | <a href="https://note.com/endless_flight" target="_blank" rel="noopener noreferrer">note</a></p>
+        <p>&copy; 2026 エンドレスフライト | <a href="../lp/">アプリ</a> | <a href="https://note.com/endless_flight" target="_blank">note</a></p>
     </footer>
 
     <script>
-        // Category Filter
-        const categoryButtons = document.querySelectorAll('.category-pill');
+        // カテゴリフィルター
+        const filterBtns = document.querySelectorAll('.filter-btn');
         const articleCards = document.querySelectorAll('.article-card');
 
-        categoryButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const category = button.dataset.category;
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.dataset.category;
 
-                categoryButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
 
                 articleCards.forEach(card => {
                     if (category === 'all' || card.dataset.category === category) {
-                        card.style.display = 'block';
+                        card.style.display = 'flex';
                     } else {
                         card.style.display = 'none';
                     }
