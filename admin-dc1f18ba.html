@@ -440,39 +440,7 @@ window.addEventListener('load', loadOrder);
 
   <div class="admin-body">
 
-    <!-- セットアップガイド -->
-    <div class="setup-guide">
-      <div class="setup-guide-title">⚙️ Firebaseセットアップ手順</div>
-      <div>
-        <div class="setup-step">
-          <div class="setup-step-num">1</div>
-          <div class="setup-step-text"><strong>Firebaseプロジェクト作成</strong><br><a href="https://console.firebase.google.com" target="_blank" rel="noopener" style="color:#7a6000">console.firebase.google.com</a> でプロジェクトを作成</div>
-        </div>
-        <div class="setup-step">
-          <div class="setup-step-num">2</div>
-          <div class="setup-step-text"><strong>Realtime Database を有効化</strong><br>「ビルド」→「Realtime Database」→ 作成（テストモード可）→ <strong>直後に手順5のルールを設定すること</strong></div>
-        </div>
-        <div class="setup-step">
-          <div class="setup-step-num">3</div>
-          <div class="setup-step-text"><strong>Authentication を有効化</strong><br>「ビルド」→「Authentication」→「メール/パスワード」を有効化し、管理者アカウントを追加</div>
-        </div>
-        <div class="setup-step">
-          <div class="setup-step-num">4</div>
-          <div class="setup-step-text"><strong>APIキーのリファラー制限（必須）</strong><br>Firebase Console → プロジェクトの設定 → 全般 → 「APIキーの制限」→ HTTPリファラーを自分のドメインのみに制限する</div>
-        </div>
-        <div class="setup-step">
-          <div class="setup-step-num">5</div>
-          <div class="setup-step-text"><strong>Security Rules を設定（必須）</strong><br>Realtime Database → ルール に以下を貼り付け：<br>
-            <code>{ "rules": { "settings": { ".read": true, ".write": "auth != null" }, "products": { ".read": true, ".write": "auth != null" }, "orders": { ".read": "auth != null", ".write": true }, "$other": { ".read": false, ".write": false } } }</code>
-          </div>
-        </div>
-        <div class="setup-step">
-          <div class="setup-step-num">6</div>
-          <div class="setup-step-text"><strong>このファイルをリネームしてデプロイ</strong><br>
-            <code>admin.html</code> → <code>admin-dc1f18ba.html</code> のようにランダムな文字列を付けてURL推測を防ぐ</div>
-        </div>
-      </div>
-    </div>
+
 
     <!-- 販売ステータス -->
     <div class="section-card">
