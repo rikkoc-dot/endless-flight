@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  ============================================================
+  ⚠️ このファイルのデプロイ名は必ずランダムにしてください
+  例: admin-dc1f18ba.html
+  理由: URL推測によるブルートフォース攻撃を防ぐため
+  ============================================================
+-->
+<title>管理画面 | モバイルオーダー</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, set, onValue, update }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  // ============================================================
+  // 🔥 FIREBASE CONFIG
+  // mobile-order.html と同じ値を設定
+  //
+  // ⚠️ セキュリティ対策（必須）:
+  //   Firebase Console → プロジェクトの設定 → 全般 → 「APIキーを制限」
+  //   → アプリケーションの制限：HTTPリファラー
+  //   → https://yourdomain.com/* のみ許可すること
+  //
+  // Firebase Security Rules（Realtime Database）:
+  // {
+  //   "rules": {
+  //     "settings":  { ".read": true,  ".write": "auth != null" },
+  //     "products":  { ".read": true,  ".write": "auth != null" },
+  //     "orders":    { ".read": "auth != null", ".write": true  },
+  //     "$other":    { ".read": false, ".write": false }
+  //   }
+  // }
+  // ============================================================
+  const firebaseConfig = {
+    apiKey:            "YOUR_API_KEY",
+    authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL:       "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+    projectId:         "YOUR_PROJECT_ID",
+    storageBucket:     "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId:             "YOUR_APP_ID"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getDatabase(app);
+  const auth = getAuth(app);
+
+  // -------------------------------------------------------
+  // ログイン状態監視
+  // 未ログイン → ログイン画面のみ表示（admin DOM は非表示）
+  // -------------------------------------------------------
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-screen').style.display = 'block';
+      // textContent で XSS 防止
+      document.getElementById('user-email').textContent = user.email;
+      listenSettings();
+      listenProducts();
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('admin-screen').style.display = 'none';
+    }
+  });
+
+  // -------------------------------------------------------
+  // ログイン（#5 対処：エラーメッセージを区別しない）
+  // -------------------------------------------------------
+  let loginAttempts = 0;
+  let loginLocked   = false;
+
+  window.doLogin = async () => {
+    if (loginLocked) {
+      document.getElementById('login-error').textContent =
+        'しばらく時間をおいてから再試行してください。';
+      return;
+    }
+
+    const email = document.getElementById('input-email').value.trim();
+    const pass  = document.getElementById('input-pass').value;
+    const errEl = document.getElementById('login-error');
+    const btn   = document.getElementById('login-btn');
+    errEl.textContent = '';
+    btn.disabled = true;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      loginAttempts = 0;
+    } catch {
+      loginAttempts++;
+      // 5回失敗で30秒ロック（ブルートフォース対策）
+      if (loginAttempts >= 5) {
+        loginLocked = true;
+        errEl.textContent = 'ログイン試行回数が上限に達しました。30秒後に再試行できます。';
+        setTimeout(() => { loginLocked = false; loginAttempts = 0; errEl.textContent = ''; }, 30000);
+      } else {
+        // メールアドレス存在確認を防ぐため、理由を区別しない
+        errEl.textContent = 'ログインに失敗しました。メールアドレスとパスワードを確認してください。';
+      }
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  // -------------------------------------------------------
+  // ログアウト
+  // -------------------------------------------------------
+  window.doLogout = async () => { await signOut(auth); };
+
+  // -------------------------------------------------------
+  // 設定リアルタイム監視
+  // -------------------------------------------------------
+  function listenSettings() {
+    onValue(ref(db, 'settings'), (snap) => {
+      const s = snap.val() || {};
+      const wt = document.getElementById('wt-input');
+      const st = document.getElementById('st-input');
+      const sm = document.getElementById('sm-input');
+      if (wt && !wt.matches(':focus')) wt.value = s.waitTime ?? '';
+      if (st && !st.matches(':focus')) st.value = s.saleStartTime ?? '';
+      // お知らせはユーザーが入力するのでサニタイズ不要（送信側で検証）
+      if (sm && !sm.matches(':focus')) sm.value = s.saleMessage ?? '';
+
+      const toggle = document.getElementById('open-toggle');
+      if (toggle) { toggle.checked = s.isOpen !== false; updateToggleLabel(s.isOpen !== false); }
+    });
+  }
+
+  // -------------------------------------------------------
+  // 商品リアルタイム監視
+  // -------------------------------------------------------
+  function listenProducts() {
+    onValue(ref(db, 'products'), (snap) => {
+      renderProductList(snap.val() || {});
+    });
+  }
+
+  // -------------------------------------------------------
+  // 設定保存（サーバー側は Security Rules で保護）
+  // -------------------------------------------------------
+  window.saveSettings = async () => {
+    // waitTime は 0〜999 の整数に制限
+    const rawWt   = Number(document.getElementById('wt-input').value);
+    const waitTime = Number.isFinite(rawWt) ? Math.max(0, Math.min(999, Math.floor(rawWt))) : 0;
+    const saleStart   = document.getElementById('st-input').value.trim();
+    // saleMessage は 200文字以内に制限
+    const saleMessage = document.getElementById('sm-input').value.trim().slice(0, 200);
+    const isOpen      = document.getElementById('open-toggle').checked;
+
+    try {
+      await set(ref(db, 'settings'), { waitTime, saleStartTime: saleStart, isOpen, saleMessage });
+      showToast('✅ 設定を保存しました');
+    } catch (e) {
+      showToast('❌ 保存に失敗しました: ' + escHtml(e.message));
+    }
+  };
+
+  // -------------------------------------------------------
+  // 待ち時間クイック更新
+  // -------------------------------------------------------
+  window.quickWaitTime = async (val) => {
+    document.getElementById('wt-input').value = val;
+    await update(ref(db, 'settings'), { waitTime: val });
+    showToast(`⏱ 待ち時間を ${val}分 に更新しました`);
+  };
+
+  // -------------------------------------------------------
+  // 販売ステータストグル
+  // -------------------------------------------------------
+  window.toggleOpen = async () => {
+    const isOpen = document.getElementById('open-toggle').checked;
+    await update(ref(db, 'settings'), { isOpen });
+    updateToggleLabel(isOpen);
+    showToast(isOpen ? '✅ 販売開始に設定しました' : '🔴 販売終了に設定しました');
+  };
+
+  function updateToggleLabel(isOpen) {
+    const label = document.getElementById('toggle-label');
+    if (!label) return;
+    label.textContent  = isOpen ? '販売中' : '販売終了';
+    label.style.color  = isOpen ? '#059669' : '#dc2626';
+    label.style.fontWeight = '700';
+  }
+
+  // -------------------------------------------------------
+  // 商品在庫トグル（DB パスはホワイトリストで制限）
+  // -------------------------------------------------------
+  const VALID_PRODUCT_IDS = [1,2,3,4,5,6,7,8,9,10];
+
+  window.toggleSoldOut = async (id, current) => {
+    // id がホワイトリスト内の整数かチェック（パス操作を防ぐ）
+    if (!VALID_PRODUCT_IDS.includes(Number(id))) {
+      showToast('❌ 不正な商品IDです');
+      return;
+    }
+    const newVal = !current;
+    await update(ref(db, `products/${Number(id)}`), { soldOut: newVal });
+    showToast(newVal ? `🚫 ID:${id} を売り切れに設定` : `✅ ID:${id} を販売中に設定`);
+  };
+
+  // -------------------------------------------------------
+  // 商品リスト描画（#4 対処：innerHTML を escHtml でサニタイズ）
+  // -------------------------------------------------------
+  function renderProductList(dbProducts) {
+    const list = document.getElementById('product-list');
+    if (!list) return;
+    list.innerHTML = ADMIN_PRODUCTS.map(p => {
+      const dbData  = dbProducts[p.id] || {};
+      const soldOut = typeof dbData.soldOut === 'boolean' ? dbData.soldOut : p.defaultSoldOut;
+      return `
+        <div class="product-row ${soldOut ? 'sold-out-row' : ''}">
+          <div class="product-row-emoji">${p.emoji}</div>
+          <div class="product-row-info">
+            <div class="product-row-name">${escHtml(p.name)}</div>
+            <div class="product-row-price">¥${p.price.toLocaleString()}</div>
+          </div>
+          <div class="product-row-action">
+            <button class="stock-btn ${soldOut ? 'btn-soldout' : 'btn-instock'}"
+              onclick="toggleSoldOut(${Number(p.id)}, ${Boolean(soldOut)})">
+              ${soldOut ? '売り切れ' : '販売中'}
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // Enter キーでログイン
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' &&
+        document.getElementById('login-screen').style.display !== 'none' &&
+        !loginLocked) {
+      doLogin();
+    }
+  });
+</script>
+
+<style>
+  :root {
+    --primary: #c0003c; --primary-light: #e8003d; --primary-pale: #fff0f3;
+    --bg: #f4f3f1; --surface: #ffffff; --surface2: #f5f4f2;
+    --border: #e8e4df; --border-strong: #d5cfc9;
+    --text: #1a1714; --text-muted: #8a847e; --text-light: #b5afa9;
+    --green: #059669; --green-pale: #ecfdf5; --red: #dc2626; --red-pale: #fef2f2;
+    --shadow: rgba(26,23,20,0.07); --shadow-md: rgba(26,23,20,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* LOGIN */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+    background: linear-gradient(150deg, #fff 0%, #fff8f9 60%, #fff0f3 100%);
+  }
+  .login-box {
+    background: #fff; border: 1px solid var(--border); border-radius: 24px; padding: 40px 32px;
+    width: 100%; max-width: 380px; box-shadow: 0 8px 32px var(--shadow-md); text-align: center;
+  }
+  .login-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; letter-spacing: 3px; color: var(--primary); margin-bottom: 4px; }
+  .login-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 32px; }
+  .login-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; text-align: left; }
+  .login-input {
+    width: 100%; padding: 13px 16px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; font-family: 'Noto Sans JP', sans-serif; font-size: 14px; color: var(--text);
+    margin-bottom: 16px; outline: none; transition: border-color 0.2s;
+  }
+  .login-input:focus { border-color: var(--primary); background: #fff; }
+  .login-btn {
+    width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 12px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px;
+    cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 14px rgba(192,0,60,0.22); margin-top: 4px;
+  }
+  .login-btn:hover { background: var(--primary-light); }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  #login-error { font-size: 12px; color: var(--red); margin-top: 12px; min-height: 18px; line-height: 1.5; }
+
+  /* ADMIN */
+  #admin-screen { display: none; }
+
+  .admin-header {
+    background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 58px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 8px var(--shadow);
+  }
+  .admin-header-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--primary); letter-spacing: 2px; }
+  .admin-header-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  #user-email { font-size: 11px; color: var(--text-muted); }
+  .logout-btn {
+    padding: 7px 14px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 12px; color: var(--text-muted);
+    cursor: pointer; transition: all 0.18s; font-family: 'Noto Sans JP', sans-serif;
+  }
+  .logout-btn:hover { background: var(--red-pale); color: var(--red); border-color: rgba(220,38,38,0.3); }
+
+  .admin-body { max-width: 800px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .section-card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 12px var(--shadow); }
+  .section-card-title { font-size: 13px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+
+  /* TOGGLE */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--surface2); border-radius: 14px; margin-bottom: 20px; }
+  .toggle-info .toggle-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .toggle-info .toggle-desc { font-size: 11px; color: var(--text-muted); }
+  .toggle-switch { position: relative; display: inline-block; width: 52px; height: 28px; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; border-radius: 28px; transition: .3s; }
+  .toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .toggle-switch input:checked + .toggle-slider { background: var(--green); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
+  #toggle-label { font-size: 13px; font-weight: 700; color: var(--green); margin-left: 10px; min-width: 60px; }
+
+  /* FORM */
+  .quick-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .quick-btn {
+    padding: 8px 16px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.18s;
+    font-family: 'Noto Sans JP', sans-serif; color: var(--text);
+  }
+  .quick-btn:hover { background: var(--primary-pale); border-color: rgba(192,0,60,0.3); color: var(--primary); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+  .form-input {
+    padding: 11px 14px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; font-family: 'Noto Sans JP', sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--primary); background: #fff; }
+  .form-textarea {
+    padding: 11px 14px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: var(--text);
+    outline: none; transition: border-color 0.2s; resize: vertical; min-height: 70px; width: 100%; margin-bottom: 6px;
+  }
+  .form-textarea:focus { border-color: var(--primary); background: #fff; }
+  .form-hint { font-size: 11px; color: var(--text-light); margin-bottom: 14px; }
+
+  .save-btn {
+    width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none; border-radius: 12px;
+    font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px;
+    cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 14px rgba(192,0,60,0.22);
+  }
+  .save-btn:hover { background: var(--primary-light); }
+
+  /* PRODUCT LIST */
+  #product-list { display: flex; flex-direction: column; gap: 8px; }
+  .product-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; transition: opacity 0.2s; }
+  .sold-out-row { opacity: 0.55; }
+  .product-row-emoji { font-size: 28px; width: 36px; text-align: center; flex-shrink: 0; }
+  .product-row-info { flex: 1; }
+  .product-row-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .product-row-price { font-size: 12px; color: var(--text-muted); }
+  .stock-btn { padding: 7px 14px; border: none; border-radius: 8px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+  .btn-instock { background: var(--green-pale); color: var(--green); }
+  .btn-instock:hover { background: #d1fae5; }
+  .btn-soldout { background: var(--red-pale); color: var(--red); }
+  .btn-soldout:hover { background: #fee2e2; }
+
+  /* SETUP GUIDE */
+  .setup-guide { background: linear-gradient(135deg, #fffbec, #fff8f0); border: 1px solid #f0d060; border-radius: 16px; padding: 20px 24px; margin-bottom: 20px; }
+  .setup-guide-title { font-size: 13px; font-weight: 900; color: #7a6000; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .setup-step { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px dashed #f0d060; }
+  .setup-step:last-child { border-bottom: none; }
+  .setup-step-num { min-width: 24px; height: 24px; background: #f0d060; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #7a6000; flex-shrink: 0; }
+  .setup-step-text { font-size: 12px; color: #7a6000; line-height: 1.6; }
+  .setup-step-text code { background: rgba(240,192,64,0.3); padding: 1px 5px; border-radius: 4px; font-size: 11px; font-family: monospace; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: 20px; right: 20px;
+    background: var(--text); color: #fff; padding: 12px 20px; border-radius: 12px;
+    font-size: 13px; font-weight: 700; z-index: 999; opacity: 0; pointer-events: none;
+    transition: all 0.25s; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transform: translateY(-8px);
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Mobile Order</div>
+    <div class="login-sub">Admin Console</div>
+    <label class="login-label">メールアドレス</label>
+    <input id="input-email" class="login-input" type="email" placeholder="admin@example.com" autocomplete="username">
+    <label class="login-label">パスワード</label>
+    <input id="input-pass" class="login-input" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button id="login-btn" class="login-btn" onclick="doLogin()">ログイン</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <header class="admin-header">
+    <div>
+      <div class="admin-header-title">Admin Console</div>
+      <div class="admin-header-sub">Mobile Order Management</div>
+    </div>
+    <div class="header-right">
+      <span id="user-email"></span>
+      <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+
+    <!-- セットアップガイド -->
+    <div class="setup-guide">
+      <div class="setup-guide-title">⚙️ Firebaseセットアップ手順</div>
+      <div>
+        <div class="setup-step">
+          <div class="setup-step-num">1</div>
+          <div class="setup-step-text"><strong>Firebaseプロジェクト作成</strong><br><a href="https://console.firebase.google.com" target="_blank" rel="noopener" style="color:#7a6000">console.firebase.google.com</a> でプロジェクトを作成</div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-num">2</div>
+          <div class="setup-step-text"><strong>Realtime Database を有効化</strong><br>「ビルド」→「Realtime Database」→ 作成（テストモード可）→ <strong>直後に手順5のルールを設定すること</strong></div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-num">3</div>
+          <div class="setup-step-text"><strong>Authentication を有効化</strong><br>「ビルド」→「Authentication」→「メール/パスワード」を有効化し、管理者アカウントを追加</div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-num">4</div>
+          <div class="setup-step-text"><strong>APIキーのリファラー制限（必須）</strong><br>Firebase Console → プロジェクトの設定 → 全般 → 「APIキーの制限」→ HTTPリファラーを自分のドメインのみに制限する</div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-num">5</div>
+          <div class="setup-step-text"><strong>Security Rules を設定（必須）</strong><br>Realtime Database → ルール に以下を貼り付け：<br>
+            <code>{ "rules": { "settings": { ".read": true, ".write": "auth != null" }, "products": { ".read": true, ".write": "auth != null" }, "orders": { ".read": "auth != null", ".write": true }, "$other": { ".read": false, ".write": false } } }</code>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="setup-step-num">6</div>
+          <div class="setup-step-text"><strong>このファイルをリネームしてデプロイ</strong><br>
+            <code>admin.html</code> → <code>admin-dc1f18ba.html</code> のようにランダムな文字列を付けてURL推測を防ぐ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 販売ステータス -->
+    <div class="section-card">
+      <div class="section-card-title">🔴 販売ステータス</div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-title">販売のON / OFF</div>
+          <div class="toggle-desc">OFFにするとユーザー画面に「販売終了」と表示されます</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label class="toggle-switch">
+            <input type="checkbox" id="open-toggle" checked onchange="toggleOpen()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span id="toggle-label">販売中</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 待ち時間・設定 -->
+    <div class="section-card">
+      <div class="section-card-title">⏱ 待ち時間・販売情報</div>
+      <div class="form-label" style="margin-bottom:10px;">待ち時間クイック設定</div>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="quickWaitTime(0)">なし</button>
+        <button class="quick-btn" onclick="quickWaitTime(5)">5分</button>
+        <button class="quick-btn" onclick="quickWaitTime(10)">10分</button>
+        <button class="quick-btn" onclick="quickWaitTime(15)">15分</button>
+        <button class="quick-btn" onclick="quickWaitTime(20)">20分</button>
+        <button class="quick-btn" onclick="quickWaitTime(30)">30分</button>
+        <button class="quick-btn" onclick="quickWaitTime(45)">45分</button>
+        <button class="quick-btn" onclick="quickWaitTime(60)">60分</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">待ち時間（分）</label>
+          <input id="wt-input" class="form-input" type="number" min="0" max="999" placeholder="例: 15">
+        </div>
+        <div class="form-group">
+          <label class="form-label">販売開始時刻</label>
+          <input id="st-input" class="form-input" type="time" value="12:00">
+        </div>
+      </div>
+      <div class="form-label" style="margin-bottom:6px;">お知らせメッセージ（任意）</div>
+      <textarea id="sm-input" class="form-textarea" placeholder="例: 本日は12:00より販売開始予定です。" maxlength="200"></textarea>
+      <div class="form-hint">※ 最大200文字</div>
+      <button class="save-btn" onclick="saveSettings()">設定を保存する</button>
+    </div>
+
+    <!-- 商品在庫管理 -->
+    <div class="section-card">
+      <div class="section-card-title">🛍 商品在庫管理</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">タップで「販売中 ↔ 売り切れ」を切り替えられます。変更は即座にユーザー画面に反映されます。</p>
+      <div id="product-list">
+        <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Firebase接続後に表示されます</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// XSSサニタイズ（#4 対処）
+// ============================================================
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ============================================================
+// 管理画面用商品マスター
+// ============================================================
+const ADMIN_PRODUCTS = [
+  { id: 1,  name: "ツアーTシャツ（ホワイト）", price: 3800, emoji: "👕", defaultSoldOut: false },
+  { id: 2,  name: "ツアーTシャツ（ブラック）", price: 3800, emoji: "🖤", defaultSoldOut: false },
+  { id: 3,  name: "フォトブック",               price: 2500, emoji: "📖", defaultSoldOut: false },
+  { id: 4,  name: "タオル",                     price: 1500, emoji: "🧣", defaultSoldOut: false },
+  { id: 5,  name: "アクリルスタンド",           price: 2000, emoji: "✨", defaultSoldOut: false },
+  { id: 6,  name: "ランダム缶バッジ",           price: 500,  emoji: "🎖", defaultSoldOut: false },
+  { id: 7,  name: "ペンライト",                 price: 2800, emoji: "💡", defaultSoldOut: false },
+  { id: 8,  name: "パーカー",                   price: 6500, emoji: "🧥", defaultSoldOut: true  },
+  { id: 9,  name: "クリアファイルセット",       price: 1200, emoji: "📁", defaultSoldOut: false },
+  { id: 10, name: "キーホルダー",               price: 800,  emoji: "🔑", defaultSoldOut: false },
+];
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
