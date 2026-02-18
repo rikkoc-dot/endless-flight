@@ -545,5 +545,30 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
+  // -------------------------------------------------------
+// QRコードの注文IDを読み取ってデータを表示する機能（追加）
+// -------------------------------------------------------
+window.loadOrder = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get('id'); // URLの ?id=... を取得
+
+  if (!orderId) return;
+
+  // Firebaseから該当する注文IDのデータを取得
+  onValue(ref(db, 'orders/' + orderId), (snap) => {
+    const orderData = snap.val();
+    if (orderData) {
+      // 画面に表示する処理（現在のファイルには表示エリアがないため、
+      // どこに表示するかHTMLの修正も必要です）
+      console.log("注文データ:", orderData);
+      showToast(`注文ID: ${orderId} のデータを読み込みました`);
+    } else {
+      showToast("データが見つかりませんでした");
+    }
+  });
+};
+
+// 画面読み込み時に注文をロードする処理を追加
+window.addEventListener('load', loadOrder);
 </body>
 </html>
