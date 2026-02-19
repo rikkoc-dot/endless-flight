@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Order - ライブ会場モバイルオーダーシステム | Endless Flight</title>
+<meta name="description" content="ライブ会場の物販をスマホで注文。QRコードで即決済、リアルタイム在庫管理。乃木坂46アンダーライブで実装したモバイルオーダーシステム。">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #FF9ECD;
+  --primary-light: #FFB8DE;
+  --primary-dark: #FF85B8;
+  --secondary: #A8D8FF;
+  --accent: #FFE17B;
+  --success: #B4F4C8;
+  --neutral-50: #FFF9F9;
+  --neutral-100: #FFF0F5;
+  --neutral-200: #FFE5EE;
+  --neutral-800: #4A4A4A;
+  --neutral-900: #2D2D2D;
+  --red: #FF4D6D;
+}
+
+body {
+  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.8;
+  color: var(--neutral-800);
+  background: linear-gradient(180deg, #FFF9F9 0%, #FFE5EE 100%);
+  padding-top: 80px;
+}
+
+/* ===== 共通ナビ（既存サイトと同一） ===== */
+.endless-flight-nav {
+  background: linear-gradient(135deg, #FFE5F0 0%, #E5F4FF 100%);
+  padding: 20px;
+  border-bottom: 2px solid #FFB6D9;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2000;
+}
+.endless-flight-nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.endless-flight-nav-logo {
+  font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #FF1493 0%, #FFB6D9 50%, #B4E4FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+}
+.endless-flight-nav-links {
+  display: flex;
+  gap: 30px;
+}
+.endless-flight-nav-links a {
+  color: #2D3436;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+.endless-flight-nav-links a:hover { color: #FFB6D9; }
+
+/* ===== ページ内ナビ ===== */
+.page-nav {
+  position: fixed;
+  top: 80px;
+  width: 100%;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 12px rgba(255,158,205,0.15);
+  z-index: 1000;
+}
+.page-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.page-logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.page-logo::before { content: "🎵"; -webkit-text-fill-color: initial; }
+.page-nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.page-nav-links a {
+  color: var(--neutral-800);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  font-size: 0.95rem;
+}
+.page-nav-links a:hover { color: var(--primary); }
+
+/* ===== HERO ===== */
+.hero {
+  margin-top: 58px;
+  padding: 6rem 2rem 7rem;
+  background: linear-gradient(135deg, #FFE5EE 0%, #E5F4FF 60%, #FFE5EE 100%);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.hero::before {
+  content: "🎵";
+  position: absolute; font-size: 4rem;
+  top: 8%; left: 6%;
+  animation: float 3.5s ease-in-out infinite;
+  opacity: 0.4;
+}
+.hero::after {
+  content: "✨";
+  position: absolute; font-size: 3rem;
+  top: 15%; right: 8%;
+  animation: float 4.5s ease-in-out infinite;
+  animation-delay: 1s;
+  opacity: 0.4;
+}
+.hero-deco1 {
+  position: absolute; font-size: 2.5rem;
+  bottom: 12%; left: 12%;
+  animation: float 5s ease-in-out infinite;
+  animation-delay: 0.5s;
+  opacity: 0.3;
+}
+.hero-deco2 {
+  position: absolute; font-size: 3.5rem;
+  bottom: 20%; right: 10%;
+  animation: float 4s ease-in-out infinite;
+  animation-delay: 1.5s;
+  opacity: 0.3;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-18px); }
+}
+
+.hero-content { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+
+.hero-badge {
+  display: inline-block;
+  background: white;
+  color: var(--primary);
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(255,158,205,0.25);
+  letter-spacing: 0.5px;
+}
+
+.hero h1 {
+  font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+  font-size: 3.8rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  line-height: 1.15;
+  background: linear-gradient(135deg, var(--primary) 0%, #FF4D6D 40%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--neutral-800);
+  line-height: 1.9;
+  font-weight: 500;
+}
+
+.hero-event {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 0.6rem 1.8rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 14px rgba(255,158,205,0.35);
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  padding: 1rem 2.5rem;
+  border: none; border-radius: 50px;
+  font-weight: 700; font-size: 1.05rem;
+  cursor: pointer; transition: all 0.3s;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  box-shadow: 0 8px 20px rgba(255,158,205,0.4);
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(255,158,205,0.5);
+}
+.btn-secondary {
+  background: white;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.btn-secondary:hover { background: var(--primary); color: white; }
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+.stat {
+  text-align: center;
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(255,158,205,0.15);
+  min-width: 100px;
+}
+.stat-num {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+.stat-label { font-size: 0.78rem; color: var(--neutral-800); opacity: 0.75; margin-top: 0.2rem; font-weight: 500; }
+
+/* ===== セクション共通 ===== */
+.section { padding: 5rem 2rem; }
+.section-white { background: white; }
+.section-soft { background: linear-gradient(135deg, var(--neutral-50) 0%, white 100%); }
+.section-blue { background: linear-gradient(135deg, #F0F9FF 0%, #E5F4FF 100%); }
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem; font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--neutral-900);
+}
+.section-subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--neutral-800); opacity: 0.75;
+  margin-bottom: 3.5rem;
+}
+
+/* ===== 課題セクション ===== */
+.problem-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.problem-card {
+  background: white;
+  border: 2px solid #FFE5EE;
+  border-radius: 18px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(255,158,205,0.08);
+}
+.problem-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(255,158,205,0.18); }
+.problem-icon { font-size: 3rem; margin-bottom: 1rem; }
+.problem-card h3 { font-size: 1.15rem; font-weight: 700; color: var(--neutral-900); margin-bottom: 0.6rem; }
+.problem-card p { font-size: 0.95rem; color: var(--neutral-800); opacity: 0.8; line-height: 1.7; }
+.problem-arrow {
+  text-align: center;
+  font-size: 3rem;
+  padding: 1rem 0;
+  color: var(--primary);
+  animation: bounce 1.5s ease-in-out infinite;
+}
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+
+/* ===== 機能セクション ===== */
+.features-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+.feature-card {
+  background: linear-gradient(135deg, var(--neutral-50) 0%, white 100%);
+  padding: 2.5rem;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(255,158,205,0.12);
+  transition: all 0.3s;
+  border: 1px solid var(--neutral-200);
+}
+.feature-card:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(255,158,205,0.22); }
+.feature-icon { font-size: 3.5rem; margin-bottom: 1.2rem; }
+.feature-card h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--neutral-900); }
+.feature-card p { color: var(--neutral-800); line-height: 1.8; font-size: 0.97rem; }
+.feature-tag {
+  display: inline-block;
+  background: var(--neutral-100);
+  color: var(--primary-dark);
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+/* ===== 役割・運用フロー ===== */
+.flow-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.flow-roles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+.role-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.8rem;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(255,158,205,0.12);
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+.role-card:hover { border-color: var(--primary-light); transform: translateY(-4px); }
+.role-icon { font-size: 3rem; margin-bottom: 0.8rem; }
+.role-label {
+  display: inline-block;
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  margin-bottom: 0.6rem;
+  letter-spacing: 1px;
+}
+.role-a .role-label { background: #FFE5EE; color: var(--primary-dark); }
+.role-b .role-label { background: #E5F4FF; color: #4A90D9; }
+.role-c .role-label { background: #E5FFE5; color: #2E9E4F; }
+.role-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+.role-card p { font-size: 0.85rem; color: var(--neutral-800); opacity: 0.8; line-height: 1.6; }
+
+.flow-steps {
+  background: white;
+  border-radius: 22px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 24px rgba(255,158,205,0.12);
+}
+.flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  padding: 1rem 0;
+  border-bottom: 1px dashed var(--neutral-200);
+}
+.flow-step:last-child { border-bottom: none; }
+.flow-step-num {
+  min-width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.flow-step-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; color: var(--neutral-900); }
+.flow-step-content p { font-size: 0.88rem; color: var(--neutral-800); opacity: 0.8; line-height: 1.6; }
+
+/* ===== セキュリティ ===== */
+.security-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+}
+.security-item {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255,158,205,0.1);
+  border: 1px solid var(--neutral-200);
+  transition: all 0.3s;
+}
+.security-item:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,158,205,0.18); }
+.security-icon { font-size: 2.2rem; margin-bottom: 0.6rem; }
+.security-item h4 { font-size: 0.9rem; font-weight: 700; color: var(--neutral-900); margin-bottom: 0.3rem; }
+.security-item p { font-size: 0.78rem; color: var(--neutral-800); opacity: 0.75; line-height: 1.5; }
+
+/* ===== 技術スタック ===== */
+.tech-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.2rem;
+}
+.tech-item {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(255,158,205,0.1);
+  transition: all 0.3s;
+  border: 1px solid var(--neutral-200);
+}
+.tech-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(255,158,205,0.18); }
+.tech-icon { font-size: 2.5rem; margin-bottom: 0.6rem; }
+.tech-item h4 { font-size: 0.9rem; font-weight: 700; color: var(--neutral-900); margin-bottom: 0.2rem; }
+.tech-item p { font-size: 0.75rem; color: var(--neutral-800); opacity: 0.7; }
+.tech-free {
+  display: inline-block;
+  background: var(--success);
+  color: #1a7a3a;
+  font-size: 0.68rem; font-weight: 700;
+  padding: 0.15rem 0.6rem; border-radius: 10px;
+  margin-top: 0.3rem;
+}
+
+/* ===== ストーリー ===== */
+.story-content {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 8px 28px rgba(255,158,205,0.14);
+  border: 1px solid var(--neutral-200);
+}
+.story-content p {
+  margin-bottom: 1.4rem;
+  line-height: 1.95;
+  color: var(--neutral-800);
+  font-size: 0.97rem;
+}
+.story-highlight { color: var(--primary-dark); font-weight: 700; }
+.story-author { text-align: right; font-weight: 700; margin-top: 1.5rem; color: var(--neutral-900); }
+
+/* ===== CTA ===== */
+.cta-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before { content:"🎵"; position:absolute;font-size:6rem;top:-1rem;left:-1rem;opacity:0.1; }
+.cta-section::after  { content:"✨"; position:absolute;font-size:5rem;bottom:-1rem;right:-1rem;opacity:0.1; }
+.cta-section h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; }
+.cta-section p { font-size: 1.15rem; margin-bottom: 2.5rem; opacity: 0.95; }
+.btn-cta {
+  background: white; color: var(--primary);
+  padding: 1.25rem 3rem; border-radius: 50px;
+  font-weight: 700; font-size: 1.15rem;
+  text-decoration: none; display: inline-block;
+  transition: all 0.3s;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.btn-cta:hover { transform: translateY(-4px); box-shadow: 0 14px 32px rgba(0,0,0,0.2); }
+
+/* ===== フッター ===== */
+footer {
+  background: var(--neutral-900);
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+.footer-links {
+  display: flex; justify-content: center; gap: 2rem;
+  margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.footer-links a { color: white; text-decoration: none; opacity: 0.75; transition: opacity 0.3s; font-size: 0.9rem; }
+.footer-links a:hover { opacity: 1; }
+.footer-note { font-size: 0.82rem; opacity: 0.5; margin-top: 0.75rem; }
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 768px) {
+  body { padding-top: 70px; }
+  .page-nav { top: 70px; }
+  .hero { margin-top: 52px; padding: 5rem 1rem 4rem; }
+  .hero h1 { font-size: 2.4rem; }
+  .hero-sub { font-size: 1.05rem; }
+  .page-nav-links { display: none; }
+  .endless-flight-nav-links { gap: 15px; }
+  .endless-flight-nav-links a { font-size: 0.85rem; }
+  .section-title { font-size: 1.9rem; }
+  .flow-roles { grid-template-columns: 1fr; }
+  .hero-stats { gap: 1rem; }
+  .cta-section h2 { font-size: 1.9rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 共通ナビ（既存サイトと同一） -->
+<div class="endless-flight-nav">
+  <div class="endless-flight-nav-container">
+    <a href="../index.html" class="endless-flight-nav-logo">Endless Flight</a>
+    <div class="endless-flight-nav-links">
+      <a href="../index.html">Top</a>
+      <a href="../column/">コラム</a>
+      <a href="../lp/">アプリ</a>
+      <a href="https://note.com/endless_flight" target="_blank">Note</a>
+    </div>
+  </div>
+</div>
+
+<!-- ページナビ -->
+<nav class="page-nav">
+  <div class="page-nav-inner">
+    <div class="page-logo">Live Order</div>
+    <ul class="page-nav-links">
+      <li><a href="#features">機能</a></li>
+      <li><a href="#flow">使い方</a></li>
+      <li><a href="#security">セキュリティ</a></li>
+      <li><a href="#tech">技術</a></li>
+      <li><a href="#story">開発ストーリー</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-deco1">🛍</div>
+  <div class="hero-deco2">📱</div>
+  <div class="hero-content">
+    <div class="hero-badge">✨ AIと一緒に作ったシステム ✨</div>
+    <h1>ライブ物販を、<br>スマホから。</h1>
+    <p class="hero-sub">
+      行列に並ばずQRコードで注文。<br>
+      スタッフはスマホで即確認・在庫もリアルタイム管理。
+    </p>
+    <div class="hero-event">📍 乃木坂46 41st SGアンダーライブ 2026.3.17〜19 @ぴあアリーナMM</div>
+    <div class="cta-buttons">
+      <a href="mobile-order.html" class="btn btn-primary">📱 注文画面を見る</a>
+      <a href="#story" class="btn btn-secondary">📖 開発ストーリー</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">役割をカバー</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">¥0</div>
+        <div class="stat-label">構築コスト</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">QR</div>
+        <div class="stat-label">で即注文</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">RT</div>
+        <div class="stat-label">リアルタイム同期</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 課題 -->
+<section class="section section-white" id="problem">
+  <h2 class="section-title">ライブ物販の「あるある」</h2>
+  <p class="section-subtitle">こんな悩み、ありませんか？</p>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-icon">😮‍💨</div>
+      <h3>行列が長すぎる</h3>
+      <p>開場前から長蛇の列。ライブが始まる前に体力を消耗してしまう。</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">😢</div>
+      <h3>並んだのに売り切れ</h3>
+      <p>やっと番が来たら欲しいグッズが売り切れ。在庫が見えない不安。</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">😰</div>
+      <h3>スタッフも大変</h3>
+      <p>口頭での注文確認・手書き集計。ミスが起きやすく、スタッフの負担も大きい。</p>
+    </div>
+  </div>
+  <div class="problem-arrow">↓</div>
+  <div style="text-align:center;margin-top:-0.5rem;">
+    <div style="display:inline-block;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;padding:1rem 2.5rem;border-radius:50px;font-size:1.15rem;font-weight:700;box-shadow:0 8px 20px rgba(255,158,205,0.35);">
+      Live Order で解決 🎉
+    </div>
+  </div>
+</section>
+
+<!-- 機能 -->
+<section class="section section-soft" id="features">
+  <h2 class="section-title">できること</h2>
+  <p class="section-subtitle">購入者・スタッフ・管理者、3つの役割に対応</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-tag">購入者向け</div>
+      <div class="feature-icon">📱</div>
+      <h3>スマホで注文・QR生成</h3>
+      <p>商品一覧から選んでカートに追加。QRコードを生成してレジに提示するだけ。並ばずに注文が完結します。待ち時間や販売開始時刻もリアルタイムで確認できます。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-tag">販売スタッフ向け</div>
+      <div class="feature-icon">🔍</div>
+      <h3>QR読み取りで即確認</h3>
+      <p>スタッフがスマホでQRを読み取ると、注文内容（商品名・数量・合計金額）が自動で画面に表示。手書きメモ不要。「対応済み」ボタンでステータスも管理できます。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-tag">在庫管理者向け</div>
+      <div class="feature-icon">📊</div>
+      <h3>リアルタイム在庫管理</h3>
+      <p>管理画面からワンタップで「販売中 ↔ 売り切れ」を切り替え。変更は即座に購入者画面に反映。待ち時間・販売開始時刻・お知らせメッセージも更新できます。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 運用フロー -->
+<section class="section section-white" id="flow">
+  <h2 class="section-title">使い方の流れ</h2>
+  <p class="section-subtitle">3つの役割がひとつのシステムで連携</p>
+  <div class="flow-section">
+    <div class="flow-roles">
+      <div class="role-card role-a">
+        <div class="role-icon">🙋</div>
+        <div class="role-label">A</div>
+        <h3>購入者</h3>
+        <p>スマホで商品を選んでQRを生成</p>
+      </div>
+      <div class="role-card role-b">
+        <div class="role-icon">🏪</div>
+        <div class="role-label">B</div>
+        <h3>販売スタッフ</h3>
+        <p>QRを読んで注文確認・決済</p>
+      </div>
+      <div class="role-card role-c">
+        <div class="role-icon">📋</div>
+        <div class="role-label">C</div>
+        <h3>在庫管理者</h3>
+        <p>管理画面で在庫・情報を更新</p>
+      </div>
+    </div>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-content">
+          <h4>🙋 Aさん：商品を選んでカートに追加</h4>
+          <p>スマホから注文画面を開き、欲しい商品を選んでカートへ。待ち時間や販売状況もリアルタイムで確認できます。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-content">
+          <h4>📱 Aさん：QRコードを生成してレジへ</h4>
+          <p>「QRコードを生成する」をタップ。注文データがFirebaseに保存され、QRコードが表示されます。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-content">
+          <h4>🏪 Bさん：スマホカメラでQRを読み取り</h4>
+          <p>販売スタッフがスマホで読み取ると、注文確認画面が自動で開きます。商品名・数量・合計金額が一覧表示されます。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-content">
+          <h4>💳 Bさん：決済タブレットに入力して決済</h4>
+          <p>注文内容を確認しながら決済タブレットに入力。「対応済みにする」ボタンでステータスを更新します。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-content">
+          <h4>📋 Cさん：売り切れになった商品を即反映</h4>
+          <p>管理画面で「売り切れ」に切り替えると、購入者画面に即座に反映。機会損失を防ぎます。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- セキュリティ -->
+<section class="section section-blue" id="security">
+  <h2 class="section-title">セキュリティ対策</h2>
+  <p class="section-subtitle">本番稼働を意識した9項目の対策を実施</p>
+  <div class="security-grid">
+    <div class="security-item">
+      <div class="security-icon">🔐</div>
+      <h4>Firebase認証</h4>
+      <p>管理画面はメール＋パスワード認証。未ログインでは一切操作不可。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">🛡️</div>
+      <h4>ブルートフォース対策</h4>
+      <p>5回失敗で30秒ロック。総当たり攻撃を防止。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">🔑</div>
+      <h4>APIキー制限</h4>
+      <p>指定ドメインからのみAPIキーが使用可能。GitHubに公開されていても悪用不可。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">🧹</div>
+      <h4>XSS対策</h4>
+      <p>全ての出力にエスケープ処理。クロスサイトスクリプティングを防止。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">📏</div>
+      <h4>入力バリデーション</h4>
+      <p>待ち時間0〜999分、メッセージ200文字制限など厳格なバリデーション。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">🎲</div>
+      <h4>admin URL難読化</h4>
+      <p>管理画面のURLをランダム文字列に。URL推測による不正アクセスを防止。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">🗄️</div>
+      <h4>DB Security Rules</h4>
+      <p>認証済みユーザーのみ書き込み可能。未定義パスは全拒否。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">🤖</div>
+      <h4>クローラー除外</h4>
+      <p>robots.txtで管理画面・スタッフ画面を全クローラーから除外。</p>
+    </div>
+    <div class="security-item">
+      <div class="security-icon">✅</div>
+      <h4>商品ID検証</h4>
+      <p>ホワイトリスト方式でパス操作攻撃を防止。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 管理画面紹介 -->
+<section class="section section-white" id="admin">
+  <h2 class="section-title">管理画面</h2>
+  <p class="section-subtitle">ログイン保護された在庫管理・設定画面</p>
+  <div style="max-width:1000px;margin:0 auto;">
+
+    <!-- ログイン保護バナー -->
+    <div style="background:linear-gradient(135deg,#FFF0F5 0%,#E5F4FF 100%);border:2px solid var(--primary-light);border-radius:20px;padding:1.5rem 2rem;margin-bottom:2.5rem;display:flex;align-items:center;gap:1rem;">
+      <span style="font-size:2rem;">🔐</span>
+      <div>
+        <div style="font-weight:700;font-size:1rem;color:var(--neutral-900);margin-bottom:0.2rem;">Firebase認証でログイン保護</div>
+        <div style="font-size:0.9rem;color:var(--neutral-800);opacity:0.8;">メール＋パスワード認証。未ログイン状態では管理UIは一切表示されません。ログイン失敗5回で30秒ロック。</div>
+      </div>
+    </div>
+
+    <!-- 管理機能グリッド -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:2.5rem;">
+
+      <div class="feature-card">
+        <div class="feature-tag">販売管理</div>
+        <div class="feature-icon">🔴</div>
+        <h3>販売 ON / OFF</h3>
+        <p>トグルスイッチひとつで販売状態を切り替え。OFFにすると購入者画面に「販売終了」と即座に表示されます。開場前・終了後の切り替えが瞬時に完了します。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-tag">待ち時間</div>
+        <div class="feature-icon">⏱</div>
+        <h3>待ち時間クイック更新</h3>
+        <p>「なし / 5 / 10 / 15 / 20 / 30 / 45 / 60分」のボタンでワンタップ更新。購入者画面のトップに即反映。販売開始時刻・お知らせメッセージ（200文字）も設定できます。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-tag">在庫管理</div>
+        <div class="feature-icon">🛍</div>
+        <h3>商品在庫ワンタップ切り替え</h3>
+        <p>商品一覧から「販売中 ↔ 売り切れ」をタップひとつで切り替え。変更は購入者画面にリアルタイムで反映。売り切れ商品はカートに追加できなくなります。</p>
+      </div>
+
+    </div>
+
+    <!-- 管理画面イメージ（UI再現） -->
+    <div style="background:white;border:1px solid var(--neutral-200);border-radius:22px;overflow:hidden;box-shadow:0 8px 28px rgba(255,158,205,0.14);">
+
+      <!-- モック：ヘッダー -->
+      <div style="background:white;border-bottom:1px solid var(--neutral-200);padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;color:var(--primary);">Admin Console</div>
+          <div style="font-size:0.7rem;color:var(--neutral-800);opacity:0.6;letter-spacing:1px;">Mobile Order Management</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span style="font-size:0.78rem;color:var(--neutral-800);opacity:0.6;">admin@example.com</span>
+          <span style="background:var(--neutral-100);border:1px solid var(--neutral-200);border-radius:8px;padding:0.3rem 0.8rem;font-size:0.75rem;color:var(--neutral-800);">ログアウト</span>
+        </div>
+      </div>
+
+      <div style="padding:1.5rem;display:grid;gap:1rem;">
+
+        <!-- 販売ステータス -->
+        <div style="background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:14px;padding:1rem 1.2rem;">
+          <div style="font-size:0.8rem;font-weight:900;letter-spacing:1px;margin-bottom:0.75rem;color:var(--neutral-900);">🔴 販売ステータス</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:white;padding:0.8rem 1rem;border-radius:10px;">
+            <div>
+              <div style="font-size:0.9rem;font-weight:700;">販売のON / OFF</div>
+              <div style="font-size:0.75rem;color:var(--neutral-800);opacity:0.7;">OFFにするとユーザー画面に「販売終了」と表示されます</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+              <div style="width:44px;height:24px;background:var(--success);border-radius:12px;position:relative;">
+                <div style="position:absolute;right:3px;top:3px;width:18px;height:18px;background:white;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+              </div>
+              <span style="font-size:0.85rem;font-weight:700;color:#059669;">販売中</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 待ち時間クイック設定 -->
+        <div style="background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:14px;padding:1rem 1.2rem;">
+          <div style="font-size:0.8rem;font-weight:900;letter-spacing:1px;margin-bottom:0.75rem;color:var(--neutral-900);">⏱ 待ち時間クイック設定</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+            <span style="padding:0.4rem 0.9rem;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;border-radius:8px;font-size:0.78rem;font-weight:700;">なし</span>
+            <span style="padding:0.4rem 0.9rem;background:white;border:1px solid var(--neutral-200);border-radius:8px;font-size:0.78rem;font-weight:700;">5分</span>
+            <span style="padding:0.4rem 0.9rem;background:white;border:1px solid var(--neutral-200);border-radius:8px;font-size:0.78rem;font-weight:700;">10分</span>
+            <span style="padding:0.4rem 0.9rem;background:white;border:1px solid var(--neutral-200);border-radius:8px;font-size:0.78rem;font-weight:700;">15分</span>
+            <span style="padding:0.4rem 0.9rem;background:white;border:1px solid var(--neutral-200);border-radius:8px;font-size:0.78rem;font-weight:700;">20分</span>
+            <span style="padding:0.4rem 0.9rem;background:white;border:1px solid var(--neutral-200);border-radius:8px;font-size:0.78rem;font-weight:700;">30分</span>
+            <span style="padding:0.4rem 0.9rem;background:white;border:1px solid var(--neutral-200);border-radius:8px;font-size:0.78rem;font-weight:700;">45分</span>
+            <span style="padding:0.4rem 0.9rem;background:white;border:1px solid var(--neutral-200);border-radius:8px;font-size:0.78rem;font-weight:700;">60分</span>
+          </div>
+        </div>
+
+        <!-- 在庫管理 -->
+        <div style="background:var(--neutral-50);border:1px solid var(--neutral-200);border-radius:14px;padding:1rem 1.2rem;">
+          <div style="font-size:0.8rem;font-weight:900;letter-spacing:1px;margin-bottom:0.75rem;color:var(--neutral-900);">🛍 商品在庫管理</div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <!-- 商品行 -->
+            <div style="display:flex;align-items:center;gap:0.8rem;background:white;padding:0.6rem 0.8rem;border-radius:10px;">
+              <span style="font-size:1.4rem;">👕</span>
+              <div style="flex:1;">
+                <div style="font-size:0.82rem;font-weight:700;">ツアーTシャツ（ホワイト）</div>
+                <div style="font-size:0.72rem;color:var(--neutral-800);opacity:0.6;">¥3,800</div>
+              </div>
+              <span style="background:#ecfdf5;color:#059669;font-size:0.72rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:6px;">販売中</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.8rem;background:white;padding:0.6rem 0.8rem;border-radius:10px;opacity:0.55;">
+              <span style="font-size:1.4rem;">🧥</span>
+              <div style="flex:1;">
+                <div style="font-size:0.82rem;font-weight:700;">パーカー</div>
+                <div style="font-size:0.72rem;color:var(--neutral-800);opacity:0.6;">¥6,500</div>
+              </div>
+              <span style="background:#fef2f2;color:#dc2626;font-size:0.72rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:6px;">売り切れ</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.8rem;background:white;padding:0.6rem 0.8rem;border-radius:10px;">
+              <span style="font-size:1.4rem;">📖</span>
+              <div style="flex:1;">
+                <div style="font-size:0.82rem;font-weight:700;">フォトブック</div>
+                <div style="font-size:0.72rem;color:var(--neutral-800);opacity:0.6;">¥2,500</div>
+              </div>
+              <span style="background:#ecfdf5;color:#059669;font-size:0.72rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:6px;">販売中</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 技術スタック -->
+<section class="section section-soft" id="tech">
+  <h2 class="section-title">使用技術</h2>
+  <p class="section-subtitle">全て無料で構築できます</p>
+  <div class="tech-grid">
+    <div class="tech-item">
+      <div class="tech-icon">🔥</div>
+      <h4>Firebase</h4>
+      <p>リアルタイムDB・認証</p>
+      <div class="tech-free">無料枠あり</div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">🐙</div>
+      <h4>GitHub Pages</h4>
+      <p>ホスティング</p>
+      <div class="tech-free">完全無料</div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">📄</div>
+      <h4>HTML / CSS / JS</h4>
+      <p>フロントエンド（1ファイル）</p>
+      <div class="tech-free">無料</div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">📱</div>
+      <h4>QRCode.js</h4>
+      <p>QRコード生成</p>
+      <div class="tech-free">無料</div>
+    </div>
+    <div class="tech-item">
+      <div class="tech-icon">🤖</div>
+      <h4>Claude</h4>
+      <p>設計・開発・レビュー</p>
+      <div class="tech-free">AI協力</div>
+    </div>
+  </div>
+</section>
+
+<!-- 開発ストーリー -->
+<section class="section section-white" id="story">
+  <h2 class="section-title">開発ストーリー</h2>
+  <p class="section-subtitle">プログラミング初心者がAIと作ったWebシステム</p>
+  <div class="story-content">
+    <p>
+      「ライブの物販列、もったいなくない？」<br>
+      そんなシンプルな疑問から、このシステムは生まれました。
+    </p>
+    <p>
+      Webシステム開発の経験は、正直ほぼゼロ。<br>
+      FirebaseもGitHub Pagesも、今回初めて触りました。
+    </p>
+    <p>
+      でも、<span class="story-highlight">Claudeと一緒なら作れるかも</span>と思い、挑戦しました。
+    </p>
+    <p>
+      最初はHTMLを貼るだけのシンプルなものを想定していたのに、<br>
+      気づいたらFirebase連携、Firebase認証、9項目のセキュリティレビュー、<br>
+      GitHub Pages移行まで全部やっていた（笑）。
+    </p>
+    <p>
+      エラーは山ほど出ました。でもClaudeは、<br>
+      「このエラーはFirebaseのセキュリティルールが原因です」<br>
+      と<strong>理由付きで解決策を教えてくれる。</strong><br>
+      「ググる → 分からない → 時間が溶ける」ループに入りませんでした。
+    </p>
+    <p>
+      得られたのは、技術だけじゃない。<br>
+      設計・実装・セキュリティ・本番デプロイ——開発フロー全体の経験。<br>
+      そして<span class="story-highlight">「プログラミング初心者でも本番システムが作れる」</span>という自信。
+    </p>
+    <p>
+      AIと一緒なら、「こんなの作れるかな」が「できた」に変わる。<br>
+      そんな時代に生きてることを、改めて実感した開発でした。
+    </p>
+    <p class="story-author">— エンドレスフライト</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>実際に触ってみる</h2>
+  <p>購入者画面・管理画面・注文確認画面、すべて無料で公開中</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+    <a href="mobile-order.html" class="btn-cta">📱 注文画面を開く</a>
+    <a href="admin-dc1f18ba.html" class="btn-cta" style="background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.7);">⚙️ 管理画面を開く</a>
+  </div>
+</section>
+
+<!-- フッター -->
+<footer>
+  <div class="footer-links">
+    <a href="mobile-order.html">注文画面</a>
+    <a href="https://note.com/endless_flight" target="_blank">開発ブログ（note）</a>
+    <a href="../index.html">Endless Flight Top</a>
+  </div>
+  <p>&copy; 2026 Endless Flight. All rights reserved.</p>
+  <p class="footer-note">本システムはプロトタイプです。商用利用の際はセキュリティ設定を必ずご確認ください。</p>
+</footer>
+
+</body>
+</html>
