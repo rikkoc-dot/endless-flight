@@ -1,0 +1,72 @@
+# robots.txt for MeasureApp Landing Page
+# https://endless-measureapp.netlify.app/
+User-agent: *
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+# Sitemap
+Sitemap: https://endless-measureapp.netlify.app/sitemap.xml
+
+# クロール速度の調整（オプション）
+Crawl-delay: 1
+
+# 特定のボットの設定
+User-agent: Googlebot
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+User-agent: Slurp
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+# AI クローラー
+User-agent: GPTBot
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+User-agent: CCBot
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin-dc1f18ba.html
+Disallow: /order-view.html
+
+# ブロックするボット（スパム対策）
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
